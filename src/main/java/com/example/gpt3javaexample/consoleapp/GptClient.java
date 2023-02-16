@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.test;
+package com.example.gpt3javaexample.consoleapp;
 
 import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionChoice;
@@ -15,7 +15,12 @@ public class GptClient {
 
     public GptClient() {
         logs = new StringBuilder();
-        service = new OpenAiService("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", Duration.ofMinutes(5));
+        service = new OpenAiService("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", Duration.ofMinutes(5));
+    }
+
+    public static void main(String[] args) {
+        GptClient client = new GptClient();
+        client.startChat();
     }
 
     public void startChat() {
@@ -49,7 +54,7 @@ public class GptClient {
         try {
             saveLogs();
         } catch (IOException e) {
-            System.out.println("FAILED TO SAVE");
+            System.out.println("FAILED TO SAVE LOGS");
         }
     }
 
