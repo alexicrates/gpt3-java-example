@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.consoleapp;
+package org.example;
 
 import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionChoice;
@@ -52,7 +52,8 @@ public class GptClient {
         }
 
         try {
-            saveLogs();
+            if (!logs.isEmpty())
+                saveLogs();
         } catch (IOException e) {
             System.out.println("FAILED TO SAVE LOGS");
         }
