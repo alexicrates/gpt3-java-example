@@ -1,5 +1,6 @@
 package com.example.gpt3javaexample.services;
 
+import com.example.gpt3javaexample.aop.SaveToLogs;
 import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionChoice;
 import com.theokanning.openai.completion.CompletionRequest;
@@ -17,18 +18,26 @@ public class GPTService {
     private String MODEL;
 
     private final OpenAiService service;
+    private final StringBuilder chatHistory;
+
 
     @Autowired
     public GPTService(OpenAiService service) {
         this.service = service;
+        this.chatHistory = new StringBuilder();
     }
 
-    public String doRequest(String prompt){
+    @SaveToLogs
+    public String doRequest(String prompt, Boolean newChat){
 
-        String input = "Input: " + prompt + "Output: ";
+        if (newChat){
+            clearHistory();
+        }
+
+        chatHistory.append("Input: ").append(prompt).append("\nOutput: ");
 
         CompletionRequest request = CompletionRequest.builder()
-                .prompt(input)
+                .prompt(chatHistory.toString())
                 .model(MODEL)
                 .maxTokens(MAX_TOKENS)
                 .build();
@@ -36,9 +45,14 @@ public class GPTService {
         String response = service.createCompletion(request).getChoices().stream()
                 .map(CompletionChoice::getText)
                 .reduce(String::concat)
-                .orElse("Hmmm.... I don't know what to say");
+                .orElse("I don't know what to say");
+
+        chatHistory.append(response).append("\n");
 
         return response;
     }
 
+    public void clearHistory(){
+        chatHistory.delete(0, chatHistory.length());
+    }
 }

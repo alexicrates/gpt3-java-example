@@ -1,11 +1,17 @@
 #---------------OPENAI API CONFIG---------------------
 openai:
   token: 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
-
   duration:
     minutes: 5
     seconds: 0
-
   max_tokens: 2000
-
   model: text-davinci-003
+
+
+#----------POSTGRES CONFIG-----------------------
+spring:
+  datasource:
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/

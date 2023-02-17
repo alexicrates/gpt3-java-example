@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.controllers;
+package com.example.gpt3javaexample.web.controllers;
 
 import com.example.gpt3javaexample.services.GPTService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,10 @@ public class GPTController {
         this.gptService = gptService;
     }
 
-    @GetMapping(value = "/", params = "prompt")
-    String request(@RequestParam("prompt") String prompt){
-        return gptService.doRequest(prompt);
+    @GetMapping(value = "/", params = {"prompt", "new_chat"})
+    String request(@RequestParam("prompt") String prompt,
+                   @RequestParam("new_chat") Boolean newChat){
+        return gptService.doRequest(prompt, newChat);
     }
 
 }
