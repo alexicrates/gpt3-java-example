@@ -1,8 +1,6 @@
 package com.example.gpt3javaexample.model.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +30,7 @@ public class ChatMessage {
 
     private String prompt;
 
+    @Enumerated(EnumType.STRING)
     private MessageType messageType;
 }
 

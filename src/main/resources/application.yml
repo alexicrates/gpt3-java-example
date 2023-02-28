@@ -10,8 +10,14 @@ openai:
 
 #----------POSTGRES CONFIG-----------------------
 spring:
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
   datasource:
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/
+    url: jdbc:postgresql://localhost:2345/logs-db
