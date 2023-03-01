@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample;
+package com.example.gpt3javaexample.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,9 +18,6 @@ public class MakeSound {
     private AudioFormat audioFormat;
     private SourceDataLine sourceLine;
 
-    /**
-     * @param filename the name of the file that is going to be played
-     */
     public void playSound(String filename){
 
         String strFilename = filename;
