@@ -16,8 +16,10 @@ public class SoundPlayer {
         fileOutputStream.close();
 
         Process exec = Runtime.getRuntime().exec("python3 ./python_scripts/tts.py ".concat(file.getAbsolutePath()));
-        boolean res = exec.waitFor(10, TimeUnit.SECONDS);
-        if (res)
+        int res = exec.waitFor();
+        if (res == 0)
             makeSound.playSound("test.wav");
+        else
+            System.out.println("SOMETHING WRONG WITH PYTHON SCRIPT");
     }
 }

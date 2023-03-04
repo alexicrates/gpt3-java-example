@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Value;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -28,9 +29,15 @@ public class ChatMessage {
 
     private Timestamp createdAt;
 
+    @Column(length = 2000)
     private String prompt;
 
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
+
+    public enum MessageType {
+        INPUT,
+        OUTPUT
+    }
 }
 

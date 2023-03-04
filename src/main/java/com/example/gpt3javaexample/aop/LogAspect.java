@@ -2,7 +2,6 @@ package com.example.gpt3javaexample.aop;
 
 import com.example.gpt3javaexample.model.entities.ChatMessage;
 import com.example.gpt3javaexample.model.repositories.PostgresRepository;
-import com.example.gpt3javaexample.util.SoundPlayer;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,9 +9,9 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import static com.example.gpt3javaexample.model.entities.ChatMessage.MessageType.INPUT;
+import static com.example.gpt3javaexample.model.entities.ChatMessage.MessageType.OUTPUT;
 
-import static com.example.gpt3javaexample.model.entities.MessageType.*;
 
 @Aspect
 @Component

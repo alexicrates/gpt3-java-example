@@ -1,6 +1,6 @@
 #---------------OPENAI API CONFIG---------------------
 openai:
-  token: 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
+  token: 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
   duration:
     minutes: 5
     seconds: 0
