@@ -1,24 +1,22 @@
-### 1. Get Linux with JDK
-FROM openjdk:19-alpine
+FROM ubuntu
 
-COPY --from=python / /
+#Install Python, pip, torch
+RUN apt-get update && apt upgrade -y
+RUN apt-get install -y python3
+RUN apt install -y python3-pip
 
-### 3. Get Python, PIP
-
-ENV PYTHONUNBUFFERED=1
-RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
-RUN python3 -m ensurepip
-RUN pip3 install --no-cache --upgrade pip setuptools
-
-### Get Torch for the app
-RUN pip3 install torch torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
-
-####
-COPY python_scripts/tts.py tts.py
 COPY model.pt model.pt
+COPY python_scripts/tts.py ./python_scripts/tts.py
 COPY example.txt example.txt
 
-RUN  /usr/bin/python3 ./tts.py
+RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
+RUN python3 ./python_scripts/tts.py example.txt
 
-#COPY target/gpt3-java-example-0.0.1-SNAPSHOT.jar gpt3-java-example-0.0.1-SNAPSHOT.jar
-#ENTRYPOINT ["java","-jar","/gpt3-java-example-0.0.1-SNAPSHOT.jar"]
+# Install OpenJDK-18
+RUN apt-get install -y openjdk-18-jdk && \
+    apt-get clean;
+
+RUN apt-get install -y alsa-base alsa-utils
+
+COPY target/gpt3-java-example-0.0.1-SNAPSHOT.jar gpt3-java-example-0.0.1-SNAPSHOT.jar
+ENTRYPOINT ["java","-jar","/gpt3-java-example-0.0.1-SNAPSHOT.jar"]

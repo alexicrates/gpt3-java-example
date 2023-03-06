@@ -12,7 +12,7 @@ import java.io.IOException;
 public class Gpt3JavaExampleApplication {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-//        SpringApplication.run(Gpt3JavaExampleApplication.class, args);
+        SpringApplication.run(Gpt3JavaExampleApplication.class, args);
 //        Process exec = Runtime.getRuntime().exec("whisper test.wav --language Russian");
 //        System.out.println(new String(exec.getInputStream().readAllBytes()));
     }
