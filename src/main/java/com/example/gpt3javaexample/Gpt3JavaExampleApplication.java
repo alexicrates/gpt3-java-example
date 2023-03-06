@@ -7,6 +7,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.IOException;
 
+// TODO: move python scripts to separate containers
+//  and then refactor Dockerfile and docker-compose.yaml
+//  and related code
+
 @SpringBootApplication
 @EnableAsync
 public class Gpt3JavaExampleApplication {
