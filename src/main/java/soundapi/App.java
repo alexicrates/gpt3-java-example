@@ -2,23 +2,47 @@ package soundapi;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
+import java.io.File;
 
 public class App {
     public static void main(String[] args) throws Exception {
+//
+//        AudioFormat format = buildAudioFormatInstance();
+//        WaveDataUtil wd = new WaveDataUtil();
+//        SoundRecorder soundRecorder = new SoundRecorder();
+//        soundRecorder.build(format);
+//
+//        System.out.println("Start recording ....");
+//        soundRecorder.start();
+//        Thread.sleep(3000);
+//        soundRecorder.stop();
+//
+//        Thread.sleep(1000);
+//        File file = wd.saveToFile("sound", AudioFileFormat.Type.WAVE, soundRecorder.getAudioInputStream());
 
-        AudioFormat format = buildAudioFormatInstance();
+////        Process exec = Runtime.getRuntime().exec("python3 ./python_scripts/speech_detection.py -f ".concat(fileName));
+//        Process exec = Runtime.getRuntime().exec(new String[]{"python3", "/home/alexicrates/Downloads/Telegram Desktop/gpt3-java-example-new/gpt3-java-example/python_scripts/speech_detection.py", "-f",
+//                file.getName()});
+//        exec.errorReader().lines().forEach(System.out::println);
+//        exec.inputReader().lines().forEach(System.out::println);
+//
+//        int i = exec.waitFor();
+//
+//        System.out.println(i);
+//        exec.errorReader().lines().forEach(System.out::println);
+//        exec.inputReader().lines().forEach(System.out::println);
+//
+//        file.delete();
+//
+//        Process exec1 = Runtime.getRuntime().exec(new String[]{"whisper", "only_speech.wav", "--language", "Russian", "--model", "basic"});
+//        exec1.inputReader().lines().forEach(System.out::println);
 
-        SoundRecorder soundRecorder = new SoundRecorder();
-        soundRecorder.build(format);
+        Process exec = Runtime.getRuntime().exec("python3 ./python_scripts/speech_detection.py -f ".concat("test.wav"));
+        int i = exec.waitFor();
 
-        System.out.println("Start recording ....");
-        soundRecorder.start();
-        Thread.sleep(5000);
-        soundRecorder.stop();
-
-        WaveDataUtil wd = new WaveDataUtil();
-        Thread.sleep(3000);
-        wd.saveToFile("sound", AudioFileFormat.Type.WAVE, soundRecorder.getAudioInputStream());
+        System.out.println(i);
+        exec.inputReader().lines().forEach(System.out::println);
+        exec.errorReader().lines().forEach(System.out::println);
     }
 
     public static AudioFormat buildAudioFormatInstance() {

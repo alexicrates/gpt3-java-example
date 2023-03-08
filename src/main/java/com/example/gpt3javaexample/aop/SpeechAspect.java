@@ -1,6 +1,6 @@
 package com.example.gpt3javaexample.aop;
 
-import com.example.gpt3javaexample.util.SoundPlayer;
+import com.example.gpt3javaexample.speaker.SoundPlayer;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.scheduling.annotation.Async;

@@ -30,7 +30,7 @@ public class SoundRecorder implements Runnable {
 
     public void start() {
         thread = new Thread(this);
-        thread.setName("Capture Microphone");
+//        thread.setName("Capture Microphone");
         thread.start();
     }
 
@@ -49,6 +49,9 @@ public class SoundRecorder implements Runnable {
             final int bufferLengthInBytes = bufferLengthInFrames * frameSizeInBytes;
             buildByteOutputStream(out, line, frameSizeInBytes, bufferLengthInBytes);
             this.audioInputStream = new AudioInputStream(line);
+//            System.out.println(frameSizeInBytes);
+//            System.out.println(bufferLengthInFrames);
+//            System.out.println(bufferLengthInBytes);
             setAudioInputStream(convertToAudioIStream(out, frameSizeInBytes));
             audioInputStream.reset();
         } catch (IOException ex) {
