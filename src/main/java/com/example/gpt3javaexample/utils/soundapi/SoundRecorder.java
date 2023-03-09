@@ -1,4 +1,4 @@
-package soundapi;
+package com.example.gpt3javaexample.utils.soundapi;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

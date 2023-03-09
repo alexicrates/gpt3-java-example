@@ -1,4 +1,4 @@
-package soundapi;
+package com.example.gpt3javaexample.utils.soundapi;
 import javax.sound.sampled.AudioFormat;
 
 public class ApplicationProperties {

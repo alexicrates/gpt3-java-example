@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.listener;
+package com.example.gpt3javaexample.utils.listener;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static soundapi.ApplicationProperties.*;
+import static com.example.gpt3javaexample.utils.soundapi.ApplicationProperties.*;
 
 public class AudioStreamerRunnable implements Runnable {
     private final TargetDataLine line;

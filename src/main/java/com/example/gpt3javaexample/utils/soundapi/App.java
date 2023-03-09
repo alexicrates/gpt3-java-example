@@ -1,8 +1,6 @@
-package soundapi;
+package com.example.gpt3javaexample.utils.soundapi;
 
-import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
-import java.io.File;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -34,15 +32,15 @@ public class App {
 //
 //        file.delete();
 //
-//        Process exec1 = Runtime.getRuntime().exec(new String[]{"whisper", "only_speech.wav", "--language", "Russian", "--model", "basic"});
+//        Process exec = Runtime.getRuntime().exec(new String[]{"whisper", "test.wav", "--language", "Russian", "--model", "base"});
 //        exec1.inputReader().lines().forEach(System.out::println);
 
-        Process exec = Runtime.getRuntime().exec("python3 ./python_scripts/speech_detection.py -f ".concat("test.wav"));
-        int i = exec.waitFor();
-
-        System.out.println(i);
-        exec.inputReader().lines().forEach(System.out::println);
-        exec.errorReader().lines().forEach(System.out::println);
+//        Process exec = Runtime.getRuntime().exec("python3 ./python_scripts/speech_detection.py -f ".concat("test.wav"));
+//        int i = exec.waitFor();
+//
+//        System.out.println(i);
+//        exec.errorReader().lines().forEach(System.out::println);
+//        exec.inputReader().lines().forEach(System.out::println);
     }
 
     public static AudioFormat buildAudioFormatInstance() {

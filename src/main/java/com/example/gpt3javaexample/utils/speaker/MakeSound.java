@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.speaker;
+package com.example.gpt3javaexample.utils.speaker;
 
 import java.io.File;
 import java.io.IOException;
