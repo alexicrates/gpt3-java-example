@@ -1,11 +1,8 @@
 package com.example.gpt3javaexample.utils.listener;
 
-import com.example.gpt3javaexample.client.ListenerClient;
 import com.example.gpt3javaexample.utils.SpeechDetector;
 import com.example.gpt3javaexample.utils.soundapi.WaveDataUtil;
 import com.example.gpt3javaexample.utils.speaker.MakeSound;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;

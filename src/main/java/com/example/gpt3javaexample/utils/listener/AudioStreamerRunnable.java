@@ -1,15 +1,22 @@
 package com.example.gpt3javaexample.utils.listener;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.example.gpt3javaexample.utils.soundapi.ApplicationProperties.*;
 
+@Getter
+@Setter
 public class AudioStreamerRunnable implements Runnable {
+    AtomicBoolean isBusy = new AtomicBoolean(false);
     private final TargetDataLine line;
     private final Queue<byte[]> bufferQueue;
     private final AudioFormat format;
@@ -18,13 +25,6 @@ public class AudioStreamerRunnable implements Runnable {
     private final int bufferLengthInBytes;
     private ByteArrayOutputStream out;
 
-    public AudioFormat getFormat() {
-         return format;
-    }
-
-    public int getBlock_size() {
-        return bufferLengthInFrames;
-    }
 
     public AudioStreamerRunnable() {
         bufferQueue = new LinkedBlockingQueue<>();
@@ -55,7 +55,9 @@ public class AudioStreamerRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            buildByteOutputStream(out, line, frameSizeInBytes, bufferLengthInBytes);
+            if (!isBusy.get()) {
+                buildByteOutputStream(out, line, frameSizeInBytes, bufferLengthInBytes);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -88,8 +90,4 @@ public class AudioStreamerRunnable implements Runnable {
         out.reset();
         return audioInputStream;
     }
-
-    public byte[] readFromQueue(){
-            return bufferQueue.poll();
-        }
 }

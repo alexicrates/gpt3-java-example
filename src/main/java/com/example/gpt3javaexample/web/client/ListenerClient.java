@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.client;
+package com.example.gpt3javaexample.web.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
