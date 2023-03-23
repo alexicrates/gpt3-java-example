@@ -29,7 +29,6 @@ public class GPTService {
     }
 
     @SaveToLogs
-    @ToSpeech
     public String doRequest(String prompt, Boolean newChat){
 
         if (newChat){

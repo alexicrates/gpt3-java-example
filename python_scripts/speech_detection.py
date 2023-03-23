@@ -1,4 +1,4 @@
-#@title Install and Import Dependencies
+# @title Install and Import Dependencies
 
 # this assumes that you have a relevant version of PyTorch installed
 # !pip install -q torchaudio
@@ -7,6 +7,7 @@ SAMPLING_RATE = 16000
 
 import numpy as np
 import torch
+
 torch.set_num_threads(1)
 
 from IPython.display import Audio
@@ -23,40 +24,40 @@ model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
  VADIterator,
  collect_chunks) = utils
 
+
 def Int2Float(sound):
     _sound = np.copy(sound)  #
     abs_max = np.abs(_sound).max()
     _sound = _sound.astype('float32')
     if abs_max > 0:
-        _sound *= 1/abs_max
+        _sound *= 1 / abs_max
     audio_float32 = torch.from_numpy(_sound.squeeze())
     return audio_float32
 
 
-
 def main(ARGS):
+    wav = read_audio(ARGS.file, sampling_rate=SAMPLING_RATE)
 
-	wav = read_audio(ARGS.file, sampling_rate=SAMPLING_RATE)
+    speech_timestamps = get_speech_timestamps(wav, model, sampling_rate=SAMPLING_RATE)
 
-	speech_timestamps = get_speech_timestamps(wav, model, sampling_rate=SAMPLING_RATE)
-	
+    if len(speech_timestamps) > 0:
+        print("silero VAD has detected a possible speech")
 
-	if(len(speech_timestamps)>0):
-		print("silero VAD has detected a possible speech")
-		save_audio('only_speech.wav', collect_chunks(speech_timestamps, wav), sampling_rate=SAMPLING_RATE)
-		Audio('only_speech.wav')
-	else:
-		print("silero VAD has detected a noise")
-	print()
+        if ARGS.save > 0:
+            save_audio('only_speech.wav', collect_chunks(speech_timestamps, wav), sampling_rate=SAMPLING_RATE)
+            Audio('only_speech.wav')
+    else:
+        print("silero VAD has detected a noise")
+    print()
 
+    wav_data = bytearray()
 
-
-	wav_data = bytearray()
 
 if __name__ == '__main__':
     DEFAULT_SAMPLE_RATE = 16000
 
     import argparse
+
     parser = argparse.ArgumentParser(description="Stream from microphone to webRTC and silero VAD")
 
     parser.add_argument('-f', '--file', type=str)
@@ -69,7 +70,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-name', '--silaro_model_name', type=str, default="silero_vad",
                         help="select the name of the model. You can select between 'silero_vad',''silero_vad_micro','silero_vad_micro_8k','silero_vad_mini','silero_vad_mini_8k'")
-    parser.add_argument('--reload', action='store_true',help="download the last version of the silero vad")
+    parser.add_argument('--reload', action='store_true', help="download the last version of the silero vad")
 
     parser.add_argument('-ts', '--trig_sum', type=float, default=0.25,
                         help="overlapping windows are used for each audio chunk, trig sum defines average probability among those windows for switching into triggered state (speech state)")
@@ -88,6 +89,8 @@ if __name__ == '__main__':
 
     parser.add_argument('-msis', '--min_silence_samples', type=int, default=500,
                         help=" minimum silence duration in samples between to separate speech chunks")
+    parser.add_argument('-s', '--save', type=int, default=0,
+                        help="save only speech samples to file")
     ARGS = parser.parse_args()
-    ARGS.rate=DEFAULT_SAMPLE_RATE
+    ARGS.rate = DEFAULT_SAMPLE_RATE
     main(ARGS)

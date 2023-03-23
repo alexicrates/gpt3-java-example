@@ -55,26 +55,28 @@ public class AudioStreamerRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            if (!isBusy.get()) {
-                buildByteOutputStream(out, line, frameSizeInBytes, bufferLengthInBytes);
-            }
+            buildByteOutputStream(out, line, frameSizeInBytes, bufferLengthInBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        line.stop();
-//        line.close();
     }
 
-    public void buildByteOutputStream(final ByteArrayOutputStream out, final TargetDataLine line, int frameSizeInBytes, final int bufferLengthInBytes) throws IOException {
+    public void buildByteOutputStream(final ByteArrayOutputStream out, TargetDataLine line, int frameSizeInBytes, final int bufferLengthInBytes) throws IOException {
         final byte[] data = new byte[bufferLengthInBytes];
         int numBytesRead;
 
-        line.start();
         while (!Thread.currentThread().isInterrupted()) {
-            if ((numBytesRead = line.read(data, 0, bufferLengthInBytes)) == -1) {
-                break;
+            if (!isBusy.get()){
+                line.start();
+                if ((numBytesRead = line.read(data, 0, bufferLengthInBytes)) == -1) {
+                    break;
+                }
+                out.write(data, 0, numBytesRead);
             }
-            out.write(data, 0, numBytesRead);
+            else {
+                if (line.available() > 0)
+                    line.flush();
+            }
         }
     }
 
@@ -85,7 +87,7 @@ public class AudioStreamerRunnable implements Runnable {
         return audioStream;
     }
 
-    public AudioInputStream getAudioInputStream(){
+    public AudioInputStream getNewAudioInputStream(){
         AudioInputStream audioInputStream = convertToAudioIStream(out, frameSizeInBytes);
         out.reset();
         return audioInputStream;
