@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.utils.listener;
+package com.example.gpt3javaexample.utils.soundapi;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;

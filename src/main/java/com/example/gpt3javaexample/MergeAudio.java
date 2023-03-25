@@ -4,7 +4,7 @@
 //import java.io.*;
 //import java.util.List;
 //
-//import static com.example.gpt3javaexample.utils.listener.AudioFilesUtils.mergeFiles;
+//import static com.example.gpt3javaexample.utils.soundapi.AudioFilesUtils.mergeFiles;
 //import static com.example.gpt3javaexample.utils.soundapi.ApplicationProperties.*;
 //import static com.example.gpt3javaexample.utils.soundapi.ApplicationProperties.BIG_ENDIAN;
 //

@@ -1,8 +1,5 @@
 package com.example.gpt3javaexample;
 
-import com.example.gpt3javaexample.utils.speaker.SoundPlayer;
-import com.example.gpt3javaexample.web.client.ListenerClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;

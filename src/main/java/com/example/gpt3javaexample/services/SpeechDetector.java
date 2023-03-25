@@ -1,10 +1,13 @@
-package com.example.gpt3javaexample.utils.listener;
+package com.example.gpt3javaexample.services;
+
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+@Service
 public class SpeechDetector {
 
-    public static boolean isSpeech(String fileName, boolean saveSpeechToFile) throws IOException, InterruptedException {
+    public boolean isSpeech(String fileName, boolean saveSpeechToFile) throws IOException, InterruptedException {
 
         StringBuilder args = new StringBuilder();
         args.append(" -f" + fileName + " ");
