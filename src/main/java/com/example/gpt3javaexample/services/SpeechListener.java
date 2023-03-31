@@ -1,10 +1,11 @@
 package com.example.gpt3javaexample.services;
 
+import com.example.gpt3javaexample.utils.WhisperAnswerSanitizer;
 import com.example.gpt3javaexample.utils.soundapi.AudioStreamerRunnable;
 import com.example.gpt3javaexample.utils.soundapi.WaveDataUtil;
 import com.example.gpt3javaexample.utils.speaker.MakeSound;
-import com.example.gpt3javaexample.utils.speaker.SoundPlayer;
 import com.example.gpt3javaexample.utils.stt.SpeechToTextConverter;
+import com.example.gpt3javaexample.web.client.ListenerClient;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,13 @@ public class SpeechListener {
 
     private final SpeechDetector speechDetector;
     private final TriggerWordDetector triggerWordDetector;
+    private final ListenerClient client;
 
     @Autowired
-    public SpeechListener(SpeechDetector speechDetector, TriggerWordDetector triggerWordDetector) {
+    public SpeechListener(SpeechDetector speechDetector, TriggerWordDetector triggerWordDetector, ListenerClient client) {
         this.speechDetector = speechDetector;
         this.triggerWordDetector = triggerWordDetector;
+        this.client = client;
     }
 
     @PostConstruct
@@ -61,8 +64,10 @@ public class SpeechListener {
             System.out.println("listen start");
 
             audioStreamerRunnable.getIsBusy().set(false);
-            getSpeechSamples(0);
+            getSpeechSamples(1);
             audioStreamerRunnable.getIsBusy().set(true);
+
+            System.out.println("listen end");
 
             mergeFilePath = mergeFiles(files, ".wav", AudioFileFormat.Type.WAVE);
 
@@ -71,11 +76,12 @@ public class SpeechListener {
             speechDetector.isSpeech(mergeFilePath, true);
             new MakeSound().playSound(ONLY_SPEECH);
 
-            String transcription = SpeechToTextConverter.convert(ONLY_SPEECH);
-            System.out.println("listen end");
-            System.out.println("transcription: ".toUpperCase() + transcription);
-
+            String transcription = WhisperAnswerSanitizer.sanitize(SpeechToTextConverter.convert(ONLY_SPEECH));
             cleanup();
+
+            System.out.println("transcription: ".toUpperCase() + transcription);
+//            client.sendRequest(transcription, true);
+
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
@@ -97,21 +103,17 @@ public class SpeechListener {
             if (triggerWordDetector.isTriggerWordDetected(fileName)){
                 System.out.println("СЛУШАЮ");
 
-                new SoundPlayer().play("СЛУШАЮ");
-                Thread.sleep(500);
-
                 int speech_samples = 0;
                 int silence_samples = 0;
 
                 while (speech_samples == 0 || silence_samples < maxSilenceSamples){
+                    Thread.sleep(3000);
+                    audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
+                    fileName = waveDataUtil.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
+
                     if (speechDetector.isSpeech(fileName, false)) {
                         speech_samples++;
                         System.out.println("speech detected");
-                        Thread.sleep(1000);
-
-                        audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
-                        fileName = waveDataUtil.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
-
                         audioInputStreams.add(audioInputStream);
                         files.add(new File(fileName));
                     } else {
@@ -139,9 +141,8 @@ public class SpeechListener {
         if (mergeFile.exists()) {
             files.add(mergeFile);
         }
-        if (!files.isEmpty()) {
-            files.forEach(File::delete);
-        }
+
+        files.forEach(File::delete);
         files.clear();
         audioInputStreams.clear();
     }
