@@ -1,22 +1,11 @@
 version: '3.0'
 
 services:
-  web-app:
-    image: spring-app
-    container_name: spring-app
+  whisper:
+    image: whisper
+    container_name: whisper
     ports:
-      - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/logs-db
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    devices:
-      - /dev/snd:/dev/snd
-    depends_on:
-      - postgres
-    networks:
-      - backend
+      - '5000:5000'
 
   postgres:
     image: postgres
@@ -29,12 +18,6 @@ services:
       - 'POSTGRES_USER=postgres'
       - 'POSTGRES_PASSWORD=password'
       - 'POSTGRES_DB=logs-db'
-    networks:
-      - backend
 
 volumes:
   logs-data:
-
-networks:
-  backend:
-    driver: bridge

@@ -1,12 +1,13 @@
-package com.example.gpt3javaexample;
+package com.example.gptapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Gpt3JavaExampleApplication {
+public class GptApiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Gpt3JavaExampleApplication.class, args);
+        SpringApplication.run(GptApiApplication.class, args);
     }
+
 }

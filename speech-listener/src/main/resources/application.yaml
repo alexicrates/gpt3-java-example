@@ -5,3 +5,6 @@ porcupine:
   model-path: /tmp/porcupine-java-2.1.4/porcupine/lib/common/porcupine_params.pv
   keyword-paths: /home/abobus/Downloads/Alisa_en_linux_v2_1_0/Alisa_en_linux_v2_1_0.ppn
   sensitivities: 1
+
+server:
+  port: 8081

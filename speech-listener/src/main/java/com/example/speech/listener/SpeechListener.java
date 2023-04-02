@@ -5,7 +5,9 @@ import com.example.speech.listener.detectors.SpeechDetector;
 import com.example.speech.listener.detectors.TriggerWordDetector;
 import com.example.speech.listener.streamer.AudioFilesUtils;
 import com.example.speech.listener.streamer.AudioStreamerRunnable;
-import com.example.speech.web.client.SpeechToTextClient;
+import com.example.speech.web.clients.GptApiClient;
+import com.example.speech.web.clients.SpeechToTextClient;
+import com.example.speech.web.dto.WhisperResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -21,10 +23,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.example.speech.listener.streamer.AudioFilesUtils.mergeFiles;
+import static com.example.speech.util.WhisperResponseParser.parse;
 
 @Service
 public class SpeechListener {
-    public static String ONLY_SPEECH = "only_speech.wav";
+    public static String SPEECH_FILE = "only_speech.wav";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final AudioStreamerRunnable audioStreamerRunnable = new AudioStreamerRunnable();
@@ -37,15 +40,16 @@ public class SpeechListener {
 
     private final SpeechDetector speechDetector;
     private final TriggerWordDetector triggerWordDetector;
-    private final SpeechToTextClient client;
-
+    private final SpeechToTextClient sttClient;
+    private final GptApiClient gptApiClient;
     @Autowired
     public SpeechListener(SpeechDetector speechDetector,
                           TriggerWordDetector triggerWordDetector,
-                          SpeechToTextClient client) {
+                          SpeechToTextClient sttClient, GptApiClient gptApiClient) {
         this.speechDetector = speechDetector;
         this.triggerWordDetector = triggerWordDetector;
-        this.client = client;
+        this.sttClient = sttClient;
+        this.gptApiClient = gptApiClient;
     }
 
     @PostConstruct
@@ -78,6 +82,12 @@ public class SpeechListener {
             Objects.requireNonNull(mergeFilePath);
             speechDetector.isSpeech(mergeFilePath, true);
             cleanup();
+
+            WhisperResponse whisperResponse = parse(sttClient.postAudioFile(new File(SPEECH_FILE)));
+            System.out.println(whisperResponse.getResults().get(0).getTranscript());
+
+            String gptResponse = gptApiClient.sendRequest(whisperResponse.getResults().get(0).getTranscript(), true);
+            System.out.println(gptResponse);
 
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
@@ -128,14 +138,11 @@ public class SpeechListener {
     }
 
     private void cleanup(){
-        File onlySpeechFile = new File(ONLY_SPEECH);
-        File mergeFile = new File(mergeFilePath);
-
-        if (onlySpeechFile.exists()) {
-            files.add(onlySpeechFile);
-        }
-        if (mergeFile.exists()) {
-            files.add(mergeFile);
+        File currentDir = new File(".");
+        for (File file : currentDir.listFiles()) {
+            if (file.getName().contains(".wav")){
+                file.delete();
+            }
         }
 
         files.forEach(File::delete);

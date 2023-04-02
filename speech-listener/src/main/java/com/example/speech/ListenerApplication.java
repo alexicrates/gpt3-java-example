@@ -1,6 +1,6 @@
 package com.example.speech;
 
-import com.example.speech.web.client.SpeechToTextClient;
+import com.example.speech.web.clients.SpeechToTextClient;
 import com.example.speech.web.dto.WhisperResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
