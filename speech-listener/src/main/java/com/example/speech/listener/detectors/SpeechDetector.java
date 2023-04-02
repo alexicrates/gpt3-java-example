@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.services;
+package com.example.speech.listener.detectors;
 
 import org.springframework.stereotype.Service;
 

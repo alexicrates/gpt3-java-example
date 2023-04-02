@@ -1,11 +1,12 @@
-package com.example.gpt3javaexample.services;
+package com.example.speech.listener;
 
-import com.example.gpt3javaexample.utils.WhisperAnswerSanitizer;
-import com.example.gpt3javaexample.utils.soundapi.AudioStreamerRunnable;
-import com.example.gpt3javaexample.utils.soundapi.WaveDataUtil;
-import com.example.gpt3javaexample.utils.speaker.MakeSound;
-import com.example.gpt3javaexample.utils.stt.SpeechToTextConverter;
-import com.example.gpt3javaexample.web.client.ListenerClient;
+
+import com.example.speech.listener.detectors.SpeechDetector;
+import com.example.speech.listener.detectors.TriggerWordDetector;
+import com.example.speech.listener.streamer.AudioFilesUtils;
+import com.example.speech.listener.streamer.AudioStreamerRunnable;
+import com.example.speech.web.client.SpeechToTextClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.example.gpt3javaexample.utils.soundapi.AudioFilesUtils.mergeFiles;
+import static com.example.speech.listener.streamer.AudioFilesUtils.mergeFiles;
 
 @Service
 public class SpeechListener {
     public static String ONLY_SPEECH = "only_speech.wav";
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final AudioStreamerRunnable audioStreamerRunnable = new AudioStreamerRunnable();
-    private final WaveDataUtil waveDataUtil = new WaveDataUtil();
+    private final AudioFilesUtils audioFilesUtils = new AudioFilesUtils();
     private final ArrayList<File> files = new ArrayList<>();
     private final ArrayList<AudioInputStream> audioInputStreams = new ArrayList<>();
 
@@ -35,10 +37,12 @@ public class SpeechListener {
 
     private final SpeechDetector speechDetector;
     private final TriggerWordDetector triggerWordDetector;
-    private final ListenerClient client;
+    private final SpeechToTextClient client;
 
     @Autowired
-    public SpeechListener(SpeechDetector speechDetector, TriggerWordDetector triggerWordDetector, ListenerClient client) {
+    public SpeechListener(SpeechDetector speechDetector,
+                          TriggerWordDetector triggerWordDetector,
+                          SpeechToTextClient client) {
         this.speechDetector = speechDetector;
         this.triggerWordDetector = triggerWordDetector;
         this.client = client;
@@ -72,15 +76,8 @@ public class SpeechListener {
             mergeFilePath = mergeFiles(files, ".wav", AudioFileFormat.Type.WAVE);
 
             Objects.requireNonNull(mergeFilePath);
-
             speechDetector.isSpeech(mergeFilePath, true);
-            new MakeSound().playSound(ONLY_SPEECH);
-
-            String transcription = WhisperAnswerSanitizer.sanitize(SpeechToTextConverter.convert(ONLY_SPEECH));
             cleanup();
-
-            System.out.println("transcription: ".toUpperCase() + transcription);
-//            client.sendRequest(transcription, true);
 
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
@@ -98,7 +95,7 @@ public class SpeechListener {
         while (!end){
             Thread.sleep(3000);
             AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
-            String fileName = waveDataUtil.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
+            String fileName = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
 
             if (triggerWordDetector.isTriggerWordDetected(fileName)){
                 System.out.println("СЛУШАЮ");
@@ -109,7 +106,7 @@ public class SpeechListener {
                 while (speech_samples == 0 || silence_samples < maxSilenceSamples){
                     Thread.sleep(3000);
                     audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
-                    fileName = waveDataUtil.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
+                    fileName = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
 
                     if (speechDetector.isSpeech(fileName, false)) {
                         speech_samples++;
@@ -123,7 +120,6 @@ public class SpeechListener {
                 }
 
                 end = true;
-                System.out.println("ДУМАЮ");
             }
             else {
                 System.out.println(".");

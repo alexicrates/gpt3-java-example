@@ -1,6 +1,6 @@
 package com.example.gpt3javaexample.aop;
 
-import com.example.gpt3javaexample.utils.speaker.SoundPlayer;
+import com.example.gpt3javaexample.services.speaker.SoundPlayer;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;

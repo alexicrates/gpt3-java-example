@@ -1,6 +1,6 @@
 package com.example.gpt3javaexample.web.controllers;
 
-import com.example.gpt3javaexample.services.GPTService;
+import com.example.gpt3javaexample.services.gpt.GPTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

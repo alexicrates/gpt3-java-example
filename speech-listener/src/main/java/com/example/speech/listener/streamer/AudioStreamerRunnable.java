@@ -1,9 +1,13 @@
-package com.example.gpt3javaexample.utils.soundapi;
+package com.example.speech.listener.streamer;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.TargetDataLine;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +15,7 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.example.gpt3javaexample.utils.soundapi.ApplicationProperties.*;
+import static com.example.speech.listener.streamer.ApplicationProperties.*;
 
 @Getter
 @Setter

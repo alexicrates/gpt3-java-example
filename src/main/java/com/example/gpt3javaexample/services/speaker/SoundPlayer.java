@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.utils.speaker;
+package com.example.gpt3javaexample.services.speaker;
 
 import java.io.File;
 import java.io.FileOutputStream;

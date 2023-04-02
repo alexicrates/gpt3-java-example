@@ -1,4 +1,4 @@
-package com.example.gpt3javaexample.services;
+package com.example.gpt3javaexample.services.gpt;
 
 import com.example.gpt3javaexample.aop.SaveToLogs;
 import com.theokanning.openai.OpenAiService;
