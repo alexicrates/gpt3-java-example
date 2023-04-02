@@ -1,9 +1,10 @@
 package com.example.gptapi.services.gpt;
 
 import com.example.gptapi.aop.SaveToLogs;
-import com.theokanning.openai.OpenAiService;
+
 import com.theokanning.openai.completion.CompletionChoice;
 import com.theokanning.openai.completion.CompletionRequest;
+import com.theokanning.openai.service.OpenAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
