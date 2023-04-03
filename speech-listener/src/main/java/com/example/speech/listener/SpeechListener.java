@@ -81,13 +81,13 @@ public class SpeechListener {
 
             Objects.requireNonNull(mergeFilePath);
             speechDetector.isSpeech(mergeFilePath, true);
-            cleanup();
 
             WhisperResponse whisperResponse = parse(sttClient.postAudioFile(new File(SPEECH_FILE)));
-            System.out.println(whisperResponse.getResults().get(0).getTranscript());
+            System.out.println("Transcript: " + whisperResponse.getResults().get(0).getTranscript());
+            cleanup();
 
             String gptResponse = gptApiClient.sendRequest(whisperResponse.getResults().get(0).getTranscript(), true);
-            System.out.println(gptResponse);
+            System.out.println("GPT Response: " + gptResponse);
 
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
@@ -114,7 +114,7 @@ public class SpeechListener {
                 int silence_samples = 0;
 
                 while (speech_samples == 0 || silence_samples < maxSilenceSamples){
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
                     audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
                     fileName = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
 

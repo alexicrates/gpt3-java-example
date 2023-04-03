@@ -29,16 +29,16 @@ public class ListenerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        File file = new File("/home/abobus/Downloads/Russian_sayings.ogg.mp3");
-        byte[] response = sttClient.postAudioFile(file);
-
-        try {
-            WhisperResponse whisperResponse = OBJECT_MAPPER.readValue(response, WhisperResponse.class);
-            System.out.println(whisperResponse.getResults().get(0).getTranscript());
-        } catch (IOException e) {
-            System.out.println("PARSING JSON ERROR");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+//        File file = new File("/home/abobus/Downloads/Russian_sayings.ogg.mp3");
+//        byte[] response = sttClient.postAudioFile(file);
+//
+//        try {
+//            WhisperResponse whisperResponse = OBJECT_MAPPER.readValue(response, WhisperResponse.class);
+//            System.out.println(whisperResponse.getResults().get(0).getTranscript());
+//        } catch (IOException e) {
+//            System.out.println("PARSING JSON ERROR");
+//            System.out.println(e.getMessage());
+//            e.printStackTrace();
+//        }
     }
 }
