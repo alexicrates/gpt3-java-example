@@ -13,10 +13,16 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>gpt3-java-example</name>
     <description>gpt3-java-example</description>
+    <packaging>pom</packaging>
 
     <properties>
         <java.version>17</java.version>
     </properties>
+
+    <modules>
+        <module>gpt-api</module>
+        <module>speech-listener</module>
+    </modules>
 
     <dependencies>
         <dependency>
