@@ -1,4 +1,4 @@
-package com.example.speech.listener.detectors;
+package com.example.speech.audio.detectors;
 
 import org.springframework.stereotype.Service;
 
@@ -9,9 +9,7 @@ public class SpeechDetector {
 
     public boolean isSpeech(String fileName, boolean saveSpeechToFile) throws IOException, InterruptedException {
 
-        StringBuilder args = new StringBuilder();
-        args.append(" -f" + fileName + " ");
-        args.append(" -s " + (saveSpeechToFile ? "1" : "0") + " ");
+        String args = " -f" + fileName + " " + " -s " + (saveSpeechToFile ? "1" : "0") + " ";
 
         Process exec = Runtime.getRuntime().exec("python3 ./python_scripts/speech_detection.py" + args);
         int i = exec.waitFor();
@@ -19,5 +17,4 @@ public class SpeechDetector {
         if (i != 0) return false;
         else return exec.inputReader().lines().anyMatch(string -> string.contains("speech"));
     }
-
 }

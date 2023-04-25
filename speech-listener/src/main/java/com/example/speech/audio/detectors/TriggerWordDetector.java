@@ -1,4 +1,4 @@
-package com.example.speech.listener.detectors;
+package com.example.speech.audio.detectors;
 
 import ai.picovoice.porcupine.Porcupine;
 import jakarta.annotation.PreDestroy;
@@ -125,7 +125,7 @@ public class TriggerWordDetector {
     }
 
     @PreDestroy
-    public void destroy() {
+    private void destroy() {
         if (porcupine != null){
             porcupine.delete();
         }
