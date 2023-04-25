@@ -1,6 +1,6 @@
 package com.example.speech;
 
-import com.example.speech.listener.detectors.TriggerWordDetector;
+import com.example.speech.audio.detectors.TriggerWordDetector;
 import com.example.speech.web.clients.SileroTTSClient;
 import com.example.speech.web.clients.WhisperSTTClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,8 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.io.File;
 
 @SpringBootApplication
 @EnableScheduling

@@ -1,4 +1,4 @@
-package com.example.speech.listener.streamer;
+package com.example.speech.audio.streamer;
 import javax.sound.sampled.AudioFormat;
 
 public class ApplicationProperties {

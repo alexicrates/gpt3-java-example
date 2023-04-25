@@ -1,4 +1,4 @@
-package com.example.speech.listener.streamer;
+package com.example.speech.audio.streamer;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +15,6 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.example.speech.listener.streamer.ApplicationProperties.*;
-
 @Getter
 @Setter
 public class AudioStreamerRunnable implements Runnable {
@@ -32,7 +30,7 @@ public class AudioStreamerRunnable implements Runnable {
 
     public AudioStreamerRunnable() {
         bufferQueue = new LinkedBlockingQueue<>();
-        format = new AudioFormat(ENCODING, RATE, SAMPLE_SIZE, CHANNELS, (SAMPLE_SIZE / 8) * CHANNELS, RATE, BIG_ENDIAN);
+        format = new AudioFormat(ApplicationProperties.ENCODING, ApplicationProperties.RATE, ApplicationProperties.SAMPLE_SIZE, ApplicationProperties.CHANNELS, (ApplicationProperties.SAMPLE_SIZE / 8) * ApplicationProperties.CHANNELS, ApplicationProperties.RATE, ApplicationProperties.BIG_ENDIAN);
         line = getTargetDataLineForRecord();
         out = new ByteArrayOutputStream();
 
@@ -85,7 +83,7 @@ public class AudioStreamerRunnable implements Runnable {
     }
 
     public AudioInputStream convertToAudioIStream(final ByteArrayOutputStream out, int frameSizeInBytes) {
-        byte audioBytes[] = out.toByteArray();
+        byte[] audioBytes = out.toByteArray();
         ByteArrayInputStream bais = new ByteArrayInputStream(audioBytes);
         AudioInputStream audioStream = new AudioInputStream(bais, format, audioBytes.length / frameSizeInBytes);
         return audioStream;
