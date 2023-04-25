@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.example.speech.listener.streamer.AudioFilesUtils.mergeFiles;
-import static com.example.speech.util.WhisperResponseParser.parse;
-
 @Service
 public class SpeechListener {
     public static String SPEECH_FILE = "only_speech.wav";
@@ -82,12 +80,24 @@ public class SpeechListener {
             Objects.requireNonNull(mergeFilePath);
             speechDetector.isSpeech(mergeFilePath, true);
 
-            WhisperResponse whisperResponse = parse(sttClient.postAudioFile(new File(SPEECH_FILE)));
-            System.out.println("Transcript: " + whisperResponse.getResults().get(0).getTranscript());
+            byte[] responseBytes = sttClient.postAudioFile(new File(SPEECH_FILE));
+            WhisperResponse whisperResponse = null;
+
+            try {
+                whisperResponse = OBJECT_MAPPER.readValue(responseBytes, WhisperResponse.class);
+                System.out.println("Transcript: " + whisperResponse.getResults().get(0).getTranscript());
+            } catch (IOException e) {
+                System.out.println("CAN'T PARSE JSON");
+                e.printStackTrace();
+                whisperResponse = null;
+            }
+
             cleanup();
 
-            String gptResponse = gptApiClient.sendRequest(whisperResponse.getResults().get(0).getTranscript(), true);
-            System.out.println("GPT Response: " + gptResponse);
+            if (whisperResponse != null) {
+                String gptResponse = gptApiClient.sendRequest(whisperResponse.getResults().get(0).getTranscript(), true);
+                System.out.println("GPT Response: " + gptResponse);
+            }
 
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
