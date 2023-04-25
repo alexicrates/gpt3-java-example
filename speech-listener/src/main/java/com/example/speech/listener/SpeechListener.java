@@ -6,7 +6,8 @@ import com.example.speech.listener.detectors.TriggerWordDetector;
 import com.example.speech.listener.streamer.AudioFilesUtils;
 import com.example.speech.listener.streamer.AudioStreamerRunnable;
 import com.example.speech.web.clients.GptApiClient;
-import com.example.speech.web.clients.SpeechToTextClient;
+import com.example.speech.web.clients.SileroTTSClient;
+import com.example.speech.web.clients.WhisperSTTClient;
 import com.example.speech.web.dto.WhisperResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -38,16 +39,19 @@ public class SpeechListener {
 
     private final SpeechDetector speechDetector;
     private final TriggerWordDetector triggerWordDetector;
-    private final SpeechToTextClient sttClient;
+    private final WhisperSTTClient sttClient;
     private final GptApiClient gptApiClient;
+    private final SileroTTSClient ttsClient;
+
     @Autowired
     public SpeechListener(SpeechDetector speechDetector,
                           TriggerWordDetector triggerWordDetector,
-                          SpeechToTextClient sttClient, GptApiClient gptApiClient) {
+                          WhisperSTTClient sttClient, GptApiClient gptApiClient, SileroTTSClient ttsClient) {
         this.speechDetector = speechDetector;
         this.triggerWordDetector = triggerWordDetector;
         this.sttClient = sttClient;
         this.gptApiClient = gptApiClient;
+        this.ttsClient = ttsClient;
     }
 
     @PostConstruct
@@ -97,6 +101,8 @@ public class SpeechListener {
             if (whisperResponse != null) {
                 String gptResponse = gptApiClient.sendRequest(whisperResponse.getResults().get(0).getTranscript(), true);
                 System.out.println("GPT Response: " + gptResponse);
+                String sileroResponse = ttsClient.sendText(gptResponse);
+                System.out.println("Silero response: " + sileroResponse);
             }
 
         } catch (InterruptedException e) {
