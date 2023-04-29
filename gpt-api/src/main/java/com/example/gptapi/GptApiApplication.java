@@ -17,6 +17,6 @@ public class GptApiApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        soundPlayer.play("Алеся");
+
     }
 }
