@@ -12,6 +12,5 @@ services:
       - 'POSTGRES_USER=postgres'
       - 'POSTGRES_PASSWORD=password'
       - 'POSTGRES_DB=logs-db'
-
 volumes:
   logs-data:
