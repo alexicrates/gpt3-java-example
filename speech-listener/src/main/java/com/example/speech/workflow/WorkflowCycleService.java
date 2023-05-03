@@ -50,11 +50,17 @@ public class WorkflowCycleService {
     @Scheduled(fixedDelay = 1000)
     public void listen() {
         try {
+            String whisperTranscript = null;
+            String gptResponse = null;
+            String sileroResponse = null;
+
             System.out.println("listen start");
-            audioStreamerRunnable.getIsBusy().set(false);
-            ArrayList<File> speechSamples = speechListener.getSpeechSamples(1);
-            audioStreamerRunnable.getIsBusy().set(true);
+            audioStreamerRunnable.setTurned(true);
+
+            ArrayList<File> speechSamples = speechListener.getTempSpeechAudioFiles(3, 300);
+
             System.out.println("listen end");
+            audioStreamerRunnable.setTurned(false);
 
             String mergeFilePath = mergeFiles(speechSamples, ".wav", AudioFileFormat.Type.WAVE);
 
@@ -62,7 +68,6 @@ public class WorkflowCycleService {
             speechDetector.isSpeech(mergeFilePath, true);
 
             byte[] responseBytes = sttClient.postAudioFile(new File(SPEECH_FILE));
-            String whisperTranscript = null;
 
             try {
                 WhisperResponse whisperResponse = OBJECT_MAPPER.readValue(responseBytes, WhisperResponse.class);
@@ -74,9 +79,11 @@ public class WorkflowCycleService {
             }
 
             if (whisperTranscript != null) {
-                String gptResponse = gptApiClient.sendRequest(whisperTranscript, true);
+                gptResponse = gptApiClient.sendRequest(whisperTranscript, true);
                 System.out.println("GPT Response: " + gptResponse);
-                String sileroResponse = ttsClient.sendText(gptResponse);
+            }
+            if (gptResponse != null) {
+                sileroResponse = ttsClient.sendText(gptResponse);
                 System.out.println("Silero response: " + sileroResponse);
             }
 

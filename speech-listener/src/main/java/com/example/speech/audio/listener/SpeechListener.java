@@ -36,37 +36,18 @@ public class SpeechListener {
         thread.start();
     }
 
-    public ArrayList<File> getSpeechSamples(int maxSilenceTimeInMillis) throws InterruptedException, IOException {
+    public ArrayList<File> getTempSpeechAudioFiles(int maxSilenceSamples, int sampleSizeInMillis) throws InterruptedException, IOException {
         boolean end = false;
         files.clear();
 
-        while (!end){
+        while (true){
             Thread.sleep(1000);
             AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
             String fileName = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
 
             if (triggerWordDetector.isTriggerWordDetected(fileName)){
-                int speechSamples = 0;
-                int silenceSamples = 0;
-                int sampleSizeInMillis = 100;
-
-                System.out.println("Recording your speech");
-                while (speechSamples == 0 || silenceSamples < maxSilenceTimeInMillis / sampleSizeInMillis){
-                    Thread.sleep(sampleSizeInMillis);
-                    audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
-                    fileName = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
-
-                    if (speechDetector.isSpeech(fileName, false)) {
-                        speechSamples++;
-                        files.add(new File(fileName));
-                        System.out.println("Speech sample is recorded");
-                    } else {
-                        System.out.println(".");
-                        silenceSamples++;
-                    }
-                }
-
-                end = true;
+                recordSpeech(maxSilenceSamples, sampleSizeInMillis);
+                break;
             }
             else {
                 System.out.println("Trigger word is not detected");
@@ -74,5 +55,25 @@ public class SpeechListener {
         }
 
         return files;
+    }
+
+    private void recordSpeech(int maxSilenceSamples, int sampleSizeInMillis) throws InterruptedException, IOException {
+        int silenceSamples = 0;
+
+        System.out.println("Recording your speech");
+        while (silenceSamples < maxSilenceSamples){
+            Thread.sleep(sampleSizeInMillis);
+            AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
+            File audioFile = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream);
+
+            if (speechDetector.isSpeech(audioFile.getName(), false)) {
+                silenceSamples = 0;
+                files.add(audioFile);
+                System.out.println("Speech sample is recorded");
+            } else {
+                System.out.println("Speech sample is not recorded");
+                silenceSamples++;
+            }
+        }
     }
 }

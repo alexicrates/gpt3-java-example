@@ -109,8 +109,9 @@ public class TriggerWordDetector {
                 if (frameIndex == porcupineFrame.length) {
                     int result = porcupine.process(porcupineFrame);
                     if (result >= 0) {
-                        System.out.printf("Detected '%s' at %.02f sec\n", keywords[result],
-                                totalSamplesRead / (float) porcupine.getSampleRate());
+//                        System.out.printf("Detected '%s' at %.02f sec\n", keywords[result],
+//                                totalSamplesRead / (float) porcupine.getSampleRate());
+                        System.out.println("\"Алеся\" is detected");
                         isDetected = true;
                         break;
                     }
