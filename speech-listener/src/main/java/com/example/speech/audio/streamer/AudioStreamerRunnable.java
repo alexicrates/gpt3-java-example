@@ -63,6 +63,10 @@ public class AudioStreamerRunnable implements Runnable {
         }
     }
 
+    public void setTurned(boolean isTurned){
+        isBusy.set(!isTurned);
+    }
+
     public void buildByteOutputStream(final ByteArrayOutputStream out, TargetDataLine line, int frameSizeInBytes, final int bufferLengthInBytes) throws IOException {
         final byte[] data = new byte[bufferLengthInBytes];
         int numBytesRead;
