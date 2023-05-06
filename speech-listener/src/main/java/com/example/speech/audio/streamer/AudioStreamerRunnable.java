@@ -2,12 +2,9 @@ package com.example.speech.audio.streamer;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.TargetDataLine;
+import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,17 +36,21 @@ public class AudioStreamerRunnable implements Runnable {
         bufferLengthInBytes = bufferLengthInFrames * frameSizeInBytes;
     }
 
+    @SneakyThrows
     public TargetDataLine getTargetDataLineForRecord() {
        TargetDataLine line;
        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
            if (!AudioSystem.isLineSupported(info)) {
-               return null;
+               throw new Exception("CAN'T DETECT LINE");
+               //line = (TargetDataLine) AudioSystem.getLine(info);
+               //line.open(format, line.getBufferSize());
            }
            try {
                line = (TargetDataLine) AudioSystem.getLine(info);
                line.open(format, line.getBufferSize());
            } catch (final Exception ex) {
-               return null;
+//               return null;
+                throw ex;
            }
            return line;
        }

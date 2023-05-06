@@ -1,0 +1,71 @@
+version: '3.0'
+
+services:
+    speech-listener:
+      image: speech-listener
+      container_name: speech-listener
+      devices:
+        - /dev/snd:/dev/snd
+      environment:
+        - "GPT_HOST=gpt:8080"
+        - "GUI_HOST=gui:8082"
+        - "TTS_HOST=tts:5001"
+        - "STT_HOST=whisper:5000"
+        - "ACCESS_KEY=AFO98BBkrILaSbTEH109hZj5Fu0Bz+g1Zn3ssIUft4NtgHd/SjhlTw=="
+        - "KEYWORD_PATH=/speech-listener/src/main/resources/porcupine/Alisa_en_linux_v2_1_0.ppn"
+        - "LIB_PATH=/speech-listener/src/main/resources/porcupine/libpv_porcupine_jni.so"
+        - "MODEL_PATH=/speech-listener/src/main/resources/porcupine/porcupine_params.pv"
+      tty: true
+
+    gui:
+      image: swing-gui
+      container_name: gui
+      volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix
+      environment:
+        - "LISTENER_HOST=speech-listener:8081"
+        - "DISPLAY=${DISPLAY}"
+
+    gpt:
+      image: gpt-api
+      container_name: gpt
+      ports:
+        - "8080:8080"
+      environment:
+        - "POSTGRES_HOST=jdbc:postgresql://postgres:5432/logs-db"
+      depends_on:
+        - postgres
+      networks:
+        - logs_db
+
+    whisper:
+      image: whisper
+      container_name: whisper
+      ports:
+        - "5000:5000"
+
+    tts:
+      image: silero-tts
+      container_name: tts
+      ports:
+        - "5001:5001"
+
+    postgres:
+      image: postgres
+      volumes:
+        - logs-data:/var/lib/postgresql/data
+      container_name: postgres
+      ports:
+        - '2345:5432'
+      environment:
+        - 'POSTGRES_USER=postgres'
+        - 'POSTGRES_PASSWORD=password'
+        - 'POSTGRES_DB=logs-db'
+      networks:
+        - logs_db
+
+volumes:
+  logs-data:
+
+networks:
+  logs_db:

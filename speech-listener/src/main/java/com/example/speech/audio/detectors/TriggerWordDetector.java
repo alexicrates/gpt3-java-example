@@ -2,6 +2,9 @@ package com.example.speech.audio.detectors;
 
 import ai.picovoice.porcupine.Porcupine;
 import jakarta.annotation.PreDestroy;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @Service
+@Getter
+@Setter
 public class TriggerWordDetector {
 
     @Value("${porcupine.access-key}")
@@ -37,6 +42,7 @@ public class TriggerWordDetector {
         return isDetected(new File(audioFilePath));
     }
 
+    @SneakyThrows
     private boolean isDetected(File inputAudioFile) {
         // create keywords from keyword_paths
         String[] keywords = new String[keywordPaths.length];
@@ -109,8 +115,6 @@ public class TriggerWordDetector {
                 if (frameIndex == porcupineFrame.length) {
                     int result = porcupine.process(porcupineFrame);
                     if (result >= 0) {
-//                        System.out.printf("Detected '%s' at %.02f sec\n", keywords[result],
-//                                totalSamplesRead / (float) porcupine.getSampleRate());
                         System.out.println("\"Алеся\" is detected");
                         isDetected = true;
                         break;
@@ -121,6 +125,7 @@ public class TriggerWordDetector {
             }
         } catch (Exception e) {
             System.out.println(e);
+            throw e;
         }
         return isDetected;
     }

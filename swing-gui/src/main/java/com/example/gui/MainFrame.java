@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.example.gui.ImageUtils.getBufferedImage;
 import static com.example.gui.ImageUtils.getResizedImageIcon;
@@ -30,12 +31,15 @@ public class MainFrame extends JFrame {
     private JLabel recordIndicator;
     private JTextArea textArea1;
 
-    ImageIcon unmutedMicroImage = getResizedImageIcon("/home/abobus/gpt3-java-example/swing-gui/src/main/resources/unmuted.png", 50, 60);
-    ImageIcon mutedMicroImage = getResizedImageIcon("/home/abobus/gpt3-java-example/swing-gui/src/main/resources/muted.png", 50, 60);
-    final String recordIndicatorImagePath = "/home/abobus/Downloads/red_circle.png";
+    final String recordIndicatorImagePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("red_circle.png")).getPath();
+    final String unmutedMicroImagePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("unmuted.png")).getPath();
+    final String mutedMicroImagePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("muted.png")).getPath();
+    ImageIcon unmutedMicroImage = getResizedImageIcon(unmutedMicroImagePath, 50, 60);
+    ImageIcon mutedMicroImage = getResizedImageIcon(mutedMicroImagePath, 50, 60);
 
     public MainFrame() throws IOException {
         $$$setupUI$$$();
+
         microphoneControl.setFocusable(false);
         microphoneControl.setMargin(new Insets(0, 0, 0, 0));
         microphoneControl.setFocusPainted(true);

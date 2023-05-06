@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Component
-@FeignClient(value = "localhost", url = "localhost:8081/")
+@FeignClient(value = "localhost", url = "${LISTENER_HOST}")
 public interface ListenerClient {
     @RequestMapping(method = GET, path = "/micro/on")
     String turnMicroOn();

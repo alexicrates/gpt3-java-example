@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-@FeignClient(value = "gui", url = "localhost:8082/")
+@FeignClient(value = "gui", url = "${GUI_HOST}")
 public interface GuiClient {
     @RequestMapping(method = GET, path = "/record/start")
     String startRecord();

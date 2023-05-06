@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-@FeignClient(value = "localhost", url = "localhost:8080/")
+@FeignClient(value = "gpt", url = "${GPT_HOST}")
 public interface GptApiClient {
     @RequestMapping(method = GET, params = {"prompt", "new_chat"})
     String sendRequest(@RequestParam("prompt") String prompt,
