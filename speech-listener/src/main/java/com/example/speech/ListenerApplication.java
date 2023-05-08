@@ -6,9 +6,10 @@ import com.example.speech.web.clients.WhisperSTTClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
@@ -28,25 +29,12 @@ public class ListenerApplication implements CommandLineRunner {
     private SileroTTSClient sileroTTSClient;
 
     public static void main(String[] args) {
-        SpringApplication.run(ListenerApplication.class, args);
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(ListenerApplication.class);
+        builder.headless(false);
+        ConfigurableApplicationContext context = builder.run(args);
     }
 
     @Override
-    public void run(String... args) throws Exception {
-//        File file = new File("/home/abobus/Downloads/Russian_sayings.ogg.mp3");
-//        byte[] response = sttClient.postAudioFile(file);
-//
-//        try {
-//            WhisperResponse whisperResponse = OBJECT_MAPPER.readValue(response, WhisperResponse.class);
-//            System.out.println(whisperResponse.getResults().get(0).getTranscript());
-//        } catch (IOException e) {
-//            System.out.println("PARSING JSON ERROR");
-//            System.out.println(e.getMessage());
-//            e.printStackTrace();
-//        }
-
-//        File file = new File("/home/alexandr/Downloads/alesya.wav");
-//        boolean triggerWordDetected = triggerWordDetector.isTriggerWordDetected(file.getPath());
-//        sileroTTSClient.sendText("Запускаем спринг");
+    public void run(String... args) {
     }
 }

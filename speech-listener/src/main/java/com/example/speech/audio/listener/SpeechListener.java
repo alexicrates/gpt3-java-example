@@ -4,6 +4,7 @@ import com.example.speech.audio.detectors.SpeechDetector;
 import com.example.speech.audio.detectors.TriggerWordDetector;
 import com.example.speech.audio.streamer.AudioFilesUtils;
 import com.example.speech.audio.streamer.AudioStreamerRunnable;
+import com.example.speech.web.clients.GuiClient;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,15 @@ public class SpeechListener {
 
     private final SpeechDetector speechDetector;
     private final TriggerWordDetector triggerWordDetector;
+    private final GuiClient guiClient;
 
     @Autowired
     public SpeechListener(SpeechDetector speechDetector,
-                          TriggerWordDetector triggerWordDetector) {
+                          TriggerWordDetector triggerWordDetector,
+                          GuiClient guiClient) {
         this.speechDetector = speechDetector;
         this.triggerWordDetector = triggerWordDetector;
+        this.guiClient = guiClient;
     }
 
     @PostConstruct
@@ -61,6 +65,7 @@ public class SpeechListener {
         int silenceSamples = 0;
 
         System.out.println("Recording your speech");
+        guiClient.startRecord();
         while (silenceSamples < maxSilenceSamples){
             Thread.sleep(sampleSizeInMillis);
             AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
@@ -75,5 +80,11 @@ public class SpeechListener {
                 silenceSamples++;
             }
         }
+        guiClient.endRecord();
+    }
+
+    public void turnMicro(boolean turned){
+        audioStreamerRunnable.setTurned(turned);
+        System.out.println("Recording micro: " + turned);
     }
 }

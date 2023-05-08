@@ -4,6 +4,7 @@ import com.example.speech.audio.detectors.SpeechDetector;
 import com.example.speech.audio.listener.SpeechListener;
 import com.example.speech.audio.streamer.AudioStreamerRunnable;
 import com.example.speech.web.clients.GptApiClient;
+import com.example.speech.web.clients.GuiClient;
 import com.example.speech.web.clients.SileroTTSClient;
 import com.example.speech.web.clients.WhisperSTTClient;
 import com.example.speech.web.dto.WhisperResponse;
@@ -33,18 +34,21 @@ public class WorkflowCycleService {
     private final WhisperSTTClient sttClient;
     private final GptApiClient gptApiClient;
     private final SileroTTSClient ttsClient;
+    private final GuiClient guiClient;
 
     @Autowired
     public WorkflowCycleService(SpeechListener speechListener,
                                 SpeechDetector speechDetector,
                                 WhisperSTTClient sttClient,
                                 GptApiClient gptApiClient,
-                                SileroTTSClient ttsClient) {
+                                SileroTTSClient ttsClient,
+                                GuiClient guiClient) {
         this.speechListener = speechListener;
         this.speechDetector = speechDetector;
         this.sttClient = sttClient;
         this.gptApiClient = gptApiClient;
         this.ttsClient = ttsClient;
+        this.guiClient = guiClient;
     }
 
     @Scheduled(fixedDelay = 1000)
@@ -57,7 +61,7 @@ public class WorkflowCycleService {
             System.out.println("listen start");
             audioStreamerRunnable.setTurned(true);
 
-            ArrayList<File> speechSamples = speechListener.getTempSpeechAudioFiles(3, 300);
+            ArrayList<File> speechSamples = speechListener.getTempSpeechAudioFiles(2, 50);
 
             System.out.println("listen end");
             audioStreamerRunnable.setTurned(false);
@@ -79,10 +83,12 @@ public class WorkflowCycleService {
             }
 
             if (whisperTranscript != null) {
+                guiClient.appendUserMessage(whisperTranscript);
                 gptResponse = gptApiClient.sendRequest(whisperTranscript, true);
                 System.out.println("GPT Response: " + gptResponse);
             }
             if (gptResponse != null) {
+                guiClient.appendBotMessage(gptResponse);
                 sileroResponse = ttsClient.sendText(gptResponse);
                 System.out.println("Silero response: " + sileroResponse);
             }

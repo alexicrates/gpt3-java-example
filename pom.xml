@@ -22,6 +22,7 @@
     <modules>
         <module>gpt-api</module>
         <module>speech-listener</module>
+        <module>swing-gui</module>
     </modules>
 
     <dependencies>
@@ -29,6 +30,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>4.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
