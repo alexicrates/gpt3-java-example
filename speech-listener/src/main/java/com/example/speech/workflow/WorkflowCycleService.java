@@ -68,7 +68,10 @@ public class WorkflowCycleService {
 
             String mergeFilePath = mergeFiles(speechSamples, ".wav", AudioFileFormat.Type.WAVE);
 
-            Objects.requireNonNull(mergeFilePath);
+            if(mergeFilePath == null){
+                return;
+            }
+
             speechDetector.isSpeech(mergeFilePath, true);
 
             byte[] responseBytes = sttClient.postAudioFile(new File(SPEECH_FILE));
