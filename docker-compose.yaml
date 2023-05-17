@@ -9,23 +9,33 @@ services:
     devices:
         - /dev/snd:/dev/snd
     environment:
+      # OPENAI API CONFIG
+      - "OPENAI_API_KEY=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"
+      - "MODEL_NAME=text-davinci-003"
+
+      # ADDRESSES OF SERVICES
       - "GPT_HOST=localhost:8080"
       - "LISTENER_HOST=localhost:8081"
       - "GUI_HOST=localhost:8082"
       - "TTS_HOST=localhost:5001"
       - "STT_HOST=localhost:5000"
       - "POSTGRES_HOST=jdbc:postgresql://postgres:5432/logs-db"
-      - "ACCESS_KEY=/QQF6ZXMMlgLz976gYguO5yIbgZH/89KbUpwq38/hKMA1BZbmv0ZyA=="
+
+      # TRIGGER WORD DETECTION MODEL CONFIG
+      - "ACCESS_KEY=bIyF3LaYYuARsCmzGSd66gG06eb5NN1hBT2v3hcrv7IbN2yvLkTG3A=="
       - "KEYWORD_PATH=/porcupine/Alisa_en_linux_v2_2_0.ppn"
       - "LIB_PATH=/porcupine/libpv_porcupine_jni.so"
       - "MODEL_PATH=/porcupine/porcupine_params.pv"
+
+      # ENABLING GUI
       - "DISPLAY=${DISPLAY}"
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       - postgres
     networks:
       - logs_db
+    tty: true
 
   postgres:
     image: postgres

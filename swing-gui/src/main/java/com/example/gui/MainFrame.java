@@ -1,5 +1,7 @@
 package com.example.gui;
 
+import com.example.model.entities.ChatMessage;
+import com.example.model.repositories.PostgresRepository;
 import com.example.web.clients.ListenerClient;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -10,10 +12,13 @@ import org.springframework.stereotype.Component;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import static com.example.gui.ImageUtils.getBufferedImage;
 import static com.example.gui.ImageUtils.getResizedImageIcon;
+import static com.example.model.entities.ChatMessage.MessageType.INPUT;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -22,6 +27,9 @@ public class MainFrame extends JFrame {
 
     @Autowired
     private ListenerClient listenerClient;
+
+    @Autowired
+    private PostgresRepository repository;
 
     private boolean isMute = false;
 
@@ -40,6 +48,8 @@ public class MainFrame extends JFrame {
     public MainFrame() throws IOException {
         $$$setupUI$$$();
 
+        this.setTitle("Voice App");
+
         microphoneControl.setFocusable(false);
         microphoneControl.setMargin(new Insets(0, 0, 0, 0));
         microphoneControl.setFocusPainted(true);
@@ -48,6 +58,7 @@ public class MainFrame extends JFrame {
         microphoneControl.setIcon(unmutedMicroImage);
 
         setRecording(false);
+        setupMenu();
 
         microphoneControl.addActionListener(e -> {
             isMute = !isMute;
@@ -67,17 +78,6 @@ public class MainFrame extends JFrame {
         this.setContentPane(mainPanel);
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-        textArea1 = new JTextArea();
-        textArea1.setLineWrap(true);
-        textArea1.setWrapStyleWord(true);
-        textArea1.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
-
-        scrollPane1 = new JScrollPane(textArea1, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane1.setMinimumSize(new Dimension(500, 500));
-    }
-
     public void appendMessage(Role role, String text) {
         textArea1.append(role + ": " + text + "\n\n");
     }
@@ -85,6 +85,61 @@ public class MainFrame extends JFrame {
     public void setRecording(boolean recording) throws IOException {
         recordIndicator.setIcon(getResizedImageIcon(
                 getBufferedImage(recordIndicatorImagePath, recording), 50, 50));
+    }
+
+    public void loadMessagesToFrame(){
+        List<ChatMessage> messages = repository.findAll();
+        for (ChatMessage message : messages) {
+            Role role = message.getMessageType() == INPUT ? Role.YOU : Role.BOT;
+            this.appendMessage(role, message.getPrompt());
+        }
+    }
+
+    private void setupMenu() {
+        JMenuBar menuBar = new JMenuBar();
+        Font font = new Font("", 0, 20);
+
+        JMenuItem authorItem = new JMenuItem("Автор");
+        authorItem.setFont(font);
+        authorItem.addActionListener(
+                e -> JOptionPane.showMessageDialog(
+                        null,
+                        "Выполнил студент группы ИИ-18 Малейчук Александр",
+                        "Автор",
+                        INFORMATION_MESSAGE));
+
+
+        JMenuItem helpItem = new JMenuItem("Помошь");
+        helpItem.setFont(font);
+        helpItem.addActionListener(
+                e -> JOptionPane.showMessageDialog(
+                        null,
+                        "----",
+                        "Помощь",
+                        INFORMATION_MESSAGE));
+
+
+        JMenu menu = new JMenu("Справка");
+        menu.setFont(font);
+        menu.add(authorItem);
+        menu.add(helpItem);
+
+        menuBar.add(menu);
+        this.setJMenuBar(menuBar);
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        textArea1 = new JTextArea();
+        textArea1.setLineWrap(true);
+        textArea1.setWrapStyleWord(true);
+        textArea1.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
+        textArea1.setEditable(false);
+        textArea1.setMaximumSize(new Dimension(500, 500));
+
+        scrollPane1 = new JScrollPane(textArea1, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane1.setMinimumSize(new Dimension(500, 500));
+        scrollPane1.setMaximumSize(new Dimension(500, 500));
     }
 
     /**

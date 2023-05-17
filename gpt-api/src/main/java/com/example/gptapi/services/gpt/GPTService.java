@@ -15,7 +15,7 @@ public class GPTService {
     @Value("${openai.max_tokens}")
     private int MAX_TOKENS;
 
-    @Value("${openai.model}")
+    @Value("${openai.model:text-davinci-003}")
     private String MODEL;
 
     private final OpenAiService service;

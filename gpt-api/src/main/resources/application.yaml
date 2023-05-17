@@ -1,11 +1,11 @@
 #---------------OPENAI API CONFIG---------------------
 openai:
-  token: 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
+  token: ${OPENAI_API_KEY}
   duration:
     minutes: 5
     seconds: 0
   max_tokens: 2000
-  model: text-davinci-003
+  model: ${MODEL_NAME}
 
 #----------POSTGRES CONFIG-----------------------
 spring:

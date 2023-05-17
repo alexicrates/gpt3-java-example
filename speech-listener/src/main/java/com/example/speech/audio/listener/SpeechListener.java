@@ -24,6 +24,7 @@ public class SpeechListener {
     private final SpeechDetector speechDetector;
     private final TriggerWordDetector triggerWordDetector;
     private final GuiClient guiClient;
+    private boolean isListening = true;
 
     @Autowired
     public SpeechListener(SpeechDetector speechDetector,
@@ -41,10 +42,13 @@ public class SpeechListener {
     }
 
     public ArrayList<File> getTempSpeechAudioFiles(int maxSilenceSamples, int sampleSizeInMillis) throws InterruptedException, IOException {
-        boolean end = false;
         files.clear();
 
         while (true){
+            if (!isListening){
+                continue;
+            }
+
             Thread.sleep(1000);
             AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
             String fileName = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
@@ -83,8 +87,9 @@ public class SpeechListener {
         guiClient.endRecord();
     }
 
-    public void turnMicro(boolean turned){
-        audioStreamerRunnable.setTurned(turned);
-        System.out.println("Recording micro: " + turned);
+    public void turnMicro(boolean isTurnedOn){
+        isListening = isTurnedOn;
+        audioStreamerRunnable.setTurned(isTurnedOn);
+        System.out.println("Recording micro: " + isTurnedOn);
     }
 }

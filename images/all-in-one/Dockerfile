@@ -9,6 +9,7 @@ RUN pip3 install flask
 RUN pip3 install playsound
 RUN pip3 install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip3 install numpy
+RUN pip3 install IPython
 
 RUN apt-get install -y ffmpeg
 RUN pip install -U openai-whisper
@@ -20,5 +21,5 @@ RUN apt-get clean
 
 COPY . .
 
-RUN ./mvnw clean verify -DskipTests
+RUN /mvnw clean verify -DskipTests
 CMD ["bash", "./bash_scripts/run-all.sh"]

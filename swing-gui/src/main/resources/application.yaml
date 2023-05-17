@@ -1,2 +1,15 @@
 server:
   port: 8082
+
+spring:
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+    url: ${POSTGRES_HOST}
