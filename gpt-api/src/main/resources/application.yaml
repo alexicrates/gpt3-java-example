@@ -16,8 +16,8 @@ spring:
       ddl-auto: update
 
   datasource:
-    username: postgres
-    password: password
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
     url: ${POSTGRES_HOST}
 

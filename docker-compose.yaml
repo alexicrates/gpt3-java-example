@@ -13,12 +13,16 @@ services:
       - "OPENAI_API_KEY=${OPENAI_API_KEY}"
       - "MODEL_NAME=text-davinci-003"
 
-      # ADDRESSES OF SERVICES
+      # HOSTS OF SERVICES
       - "GPT_HOST=localhost:8080"
       - "LISTENER_HOST=localhost:8081"
       - "GUI_HOST=localhost:8082"
       - "TTS_HOST=localhost:5001"
       - "STT_HOST=localhost:5000"
+
+      #POSTGRES CONFIG
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=#{POSTGRES_PASSWORD}'
       - "POSTGRES_HOST=jdbc:postgresql://postgres:5432/logs-db"
 
       # TRIGGER WORD DETECTION MODEL CONFIG
@@ -45,8 +49,8 @@ services:
     ports:
       - '2345:5432'
     environment:
-      - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=#{POSTGRES_PASSWORD}'
       - 'POSTGRES_DB=logs-db'
     networks:
       - logs_db
