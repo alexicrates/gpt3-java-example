@@ -18,7 +18,6 @@ import javax.sound.sampled.AudioFileFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static com.example.speech.audio.streamer.AudioFilesUtils.mergeFiles;
 
@@ -86,12 +85,20 @@ public class WorkflowCycleService {
             }
 
             if (whisperTranscript != null) {
-                guiClient.appendUserMessage(whisperTranscript);
+                try {
+                    guiClient.appendUserMessage(whisperTranscript);
+                } catch (Exception e) {
+                    System.out.println("NO GUI PROVIDED");
+                }
                 gptResponse = gptApiClient.sendRequest(whisperTranscript, true);
                 System.out.println("GPT Response: " + gptResponse);
             }
             if (gptResponse != null) {
-                guiClient.appendBotMessage(gptResponse);
+                try {
+                    guiClient.appendBotMessage(gptResponse);
+                } catch (Exception e) {
+                    System.out.println("NO GUI PROVIDED");
+                }
                 sileroResponse = ttsClient.sendText(gptResponse);
                 System.out.println("Silero response: " + sileroResponse);
             }
