@@ -1,8 +1,7 @@
 package com.example.gptapi.aop;
 
-
-import com.example.gptapi.model.entities.ChatMessage;
-import com.example.gptapi.model.repositories.PostgresRepository;
+import com.example.gptlogsspringbootstarter.model.entities.ChatMessage;
+import com.example.gptlogsspringbootstarter.model.repositories.PostgresRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,8 +9,8 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static com.example.gptapi.model.entities.ChatMessage.MessageType.INPUT;
-import static com.example.gptapi.model.entities.ChatMessage.MessageType.OUTPUT;
+import static com.example.gptlogsspringbootstarter.model.entities.ChatMessage.MessageType.INPUT;
+import static com.example.gptlogsspringbootstarter.model.entities.ChatMessage.MessageType.OUTPUT;
 
 
 @Aspect

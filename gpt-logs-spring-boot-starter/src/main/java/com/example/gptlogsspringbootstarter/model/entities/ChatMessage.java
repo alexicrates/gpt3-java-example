@@ -1,4 +1,4 @@
-package com.example.model.entities;
+package com.example.gptlogsspringbootstarter.model.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

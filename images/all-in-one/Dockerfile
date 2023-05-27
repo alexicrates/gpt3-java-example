@@ -21,5 +21,6 @@ RUN apt-get clean
 
 COPY . .
 
+RUN /mvnw --projects gpt-logs-spring-boot-starter clean install
 RUN /mvnw clean verify -DskipTests
 CMD ["bash", "./bash_scripts/run-all.sh"]
