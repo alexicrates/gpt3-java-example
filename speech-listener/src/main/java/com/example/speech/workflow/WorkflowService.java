@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import static com.example.speech.audio.streamer.AudioFilesUtils.mergeFiles;
 
 @Service
-public class WorkflowCycleService {
+public class WorkflowService {
     private static final String SPEECH_FILE = "only_speech.wav";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -36,12 +36,12 @@ public class WorkflowCycleService {
     private final GuiClient guiClient;
 
     @Autowired
-    public WorkflowCycleService(SpeechListener speechListener,
-                                SpeechDetector speechDetector,
-                                WhisperSTTClient sttClient,
-                                GptApiClient gptApiClient,
-                                SileroTTSClient ttsClient,
-                                GuiClient guiClient) {
+    public WorkflowService(SpeechListener speechListener,
+                           SpeechDetector speechDetector,
+                           WhisperSTTClient sttClient,
+                           GptApiClient gptApiClient,
+                           SileroTTSClient ttsClient,
+                           GuiClient guiClient) {
         this.speechListener = speechListener;
         this.speechDetector = speechDetector;
         this.sttClient = sttClient;
