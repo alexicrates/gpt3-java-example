@@ -6,6 +6,9 @@ porcupine:
   keyword-paths: ${KEYWORD_PATH}
   sensitivities: 1
 
+#SPHINX CONFIG
+sphinx:
+  trigger-word-path: ${GPT_HOME}/speech-listener/src/main/resources/
 
 server:
   port: 8081
