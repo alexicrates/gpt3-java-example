@@ -21,11 +21,18 @@ public class GPTService {
     private final OpenAiService service;
     private final StringBuilder chatHistory;
 
+    private final static String precondition =
+            "Ты голосовой ассистент по имени Алеся, который специализируется на консультации по сельскому хозяйству. " +
+                    "Далее Input - это сообщение пользователя, а Output - твой ответ. " +
+                    "В сообщениях пользователя возможны любые ошибки из-за неточности транскрипции. " +
+                    "Если в сообщении пользователя бессмыслица, то дай понять это";
 
     @Autowired
     public GPTService(OpenAiService service) {
         this.service = service;
         this.chatHistory = new StringBuilder();
+
+        chatHistory.append(precondition);
     }
 
     @SaveToLogs
@@ -35,7 +42,7 @@ public class GPTService {
             clearHistory();
         }
 
-        chatHistory.append("Input: ").append(prompt).append("\nOutput: ");
+        chatHistory.append("\nInput: ").append(prompt).append("\nOutput: ");
 
         CompletionRequest request = CompletionRequest.builder()
                 .prompt(chatHistory.toString())
@@ -55,5 +62,6 @@ public class GPTService {
 
     public void clearHistory(){
         chatHistory.delete(0, chatHistory.length());
+        chatHistory.append(precondition);
     }
 }
