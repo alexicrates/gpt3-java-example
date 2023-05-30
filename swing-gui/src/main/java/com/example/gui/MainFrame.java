@@ -91,6 +91,9 @@ public class MainFrame extends JFrame {
     public void appendMessage(Role role, String text) {
         textArea1.append(role + ": " + text + "\n\n");
     }
+    public void clearMessageWindow(){
+        textArea1.setText("");
+    }
 
     public void setRecording(boolean recording) throws IOException {
         recordIndicator.setIcon(getResizedImageIcon(
@@ -126,6 +129,22 @@ public class MainFrame extends JFrame {
         menu.add(authorItem);
         menu.add(helpItem);
 
+        JMenuItem deleteLogsItem = new JMenuItem("Очистить историю");
+        deleteLogsItem.setFont(font);
+        deleteLogsItem.addActionListener(e -> {
+            try {
+                repository.deleteAll();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            clearMessageWindow();
+        });
+
+        JMenu actionMenu = new JMenu("Действия");
+        actionMenu.setFont(font);
+        actionMenu.add(deleteLogsItem);
+
+        menuBar.add(actionMenu);
         menuBar.add(menu);
         this.setJMenuBar(menuBar);
     }
