@@ -1,6 +1,7 @@
 package com.example.speech.audio.listener;
 
 import com.example.speech.audio.detectors.SpeechDetector;
+import com.example.speech.audio.detectors.SphinxTriggerWordDetector;
 import com.example.speech.audio.detectors.TriggerWordDetector;
 import com.example.speech.audio.streamer.AudioFilesUtils;
 import com.example.speech.audio.streamer.AudioStreamerRunnable;
@@ -16,23 +17,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @Service
-public class SpeechListener {
+public class SpeechListenerRecorder {
     private final AudioStreamerRunnable audioStreamerRunnable = new AudioStreamerRunnable();
     private final AudioFilesUtils audioFilesUtils = new AudioFilesUtils();
     private final ArrayList<File> files = new ArrayList<>();
 
     private final SpeechDetector speechDetector;
-    private final TriggerWordDetector triggerWordDetector;
     private final GuiClient guiClient;
-    private boolean isListening = true;
+    private final SphinxTriggerWordDetector sphinxTriggerWordDetector;
+    private boolean ifListening = true;
 
     @Autowired
-    public SpeechListener(SpeechDetector speechDetector,
-                          TriggerWordDetector triggerWordDetector,
-                          GuiClient guiClient) {
+    public SpeechListenerRecorder(SpeechDetector speechDetector,
+                                  TriggerWordDetector triggerWordDetector,
+                                  GuiClient guiClient,
+                                  SphinxTriggerWordDetector sphinxTriggerWordDetector) {
         this.speechDetector = speechDetector;
-        this.triggerWordDetector = triggerWordDetector;
         this.guiClient = guiClient;
+        this.sphinxTriggerWordDetector = sphinxTriggerWordDetector;
     }
 
     @PostConstruct
@@ -44,21 +46,11 @@ public class SpeechListener {
     public ArrayList<File> getTempSpeechAudioFiles(int maxSilenceSamples, int sampleSizeInMillis) throws InterruptedException, IOException {
         files.clear();
 
-        while (true){
-            if (!isListening){
-                continue;
-            }
+        if (ifListening) {
+            boolean b   = sphinxTriggerWordDetector.waitForTriggerWord();
 
-            Thread.sleep(1000);
-            AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
-            String fileName = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream).getName();
-
-            if (triggerWordDetector.isTriggerWordDetected(fileName)){
+            if (b){
                 recordSpeech(maxSilenceSamples, sampleSizeInMillis);
-                break;
-            }
-            else {
-                System.out.println("Trigger word is not detected");
             }
         }
 
@@ -69,7 +61,14 @@ public class SpeechListener {
         int silenceSamples = 0;
 
         System.out.println("Recording your speech");
-        guiClient.startRecord();
+
+        turnMicro(true);
+        try {
+            guiClient.startRecord();
+        } catch (Exception e) {
+            System.out.println("No gui is present");
+        }
+
         while (silenceSamples < maxSilenceSamples){
             Thread.sleep(sampleSizeInMillis);
             AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
@@ -84,11 +83,18 @@ public class SpeechListener {
                 silenceSamples++;
             }
         }
-        guiClient.endRecord();
+
+        turnMicro(false);
+        try {
+            guiClient.endRecord();
+        } catch (Exception e) {
+            System.out.println("No gui is present");
+        }
     }
 
     public void turnMicro(boolean isTurnedOn){
-        isListening = isTurnedOn;
+        this.ifListening = isTurnedOn;
+        sphinxTriggerWordDetector.setListening(isTurnedOn);
         audioStreamerRunnable.setTurned(isTurnedOn);
         System.out.println("Recording micro: " + isTurnedOn);
     }

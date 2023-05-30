@@ -1,9 +1,10 @@
-package com.example.speech.audio;
+package com.example.speech.audio.detectors;
 
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.io.IOException;
 
 @Service
 @Getter
+@Setter
 public class SphinxTriggerWordDetector {
 
     @Value("${sphinx.trigger-word-path}")
@@ -19,10 +21,13 @@ public class SphinxTriggerWordDetector {
 
     private LiveSpeechRecognizer recognizer;
 
+    private boolean isListening = true;
+    private Configuration configuration;
+
     @PostConstruct
-    public void check() throws IOException {
+    public void config() throws IOException {
         // Load configuration
-        Configuration configuration = new Configuration();
+         configuration = new Configuration();
 
         configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
         configuration.setDictionaryPath(triggerWordConfigPath + "alesya.dict");
@@ -36,24 +41,21 @@ public class SphinxTriggerWordDetector {
 
     @SneakyThrows
     public boolean waitForTriggerWord(){
-        if (recognizer == null){
-            System.out.println("SPEECH RECOGNIZER IS NOT CONFIGURED");
-            return false;
-        }
+        recognizer = new LiveSpeechRecognizer(configuration);
+
         Thread.sleep(1000);
         System.out.println("Listening...");
         recognizer.startRecognition(true);
 
-        while (true) {
+        while (isListening) {
             String hypothesis = recognizer.getResult().getHypothesis();
-            if (hypothesis.equals("alesya")) {
+            if (hypothesis.equals("alesya") && isListening) {
                 System.out.println("Trigger word detected: " + hypothesis);
                 recognizer.stopRecognition();
                 return true;
-            } else {
-                System.out.println("Trigger word is not detected");
             }
         }
-    }
 
+        return false;
+    }
 }
