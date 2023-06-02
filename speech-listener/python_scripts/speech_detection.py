@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Stream from microphone to webRTC and silero VAD")
 
-    parser.add_argument('-f', '--file', type=str)
+    parser.add_argument('-f', '--file', type=str, help="name of file which will contain only speech samples")
     parser.add_argument('-v', '--webRTC_aggressiveness', type=int, default=3,
                         help="Set aggressiveness of webRTC: an integer between 0 and 3, 0 being the least aggressive about filtering out non-speech, 3 the most aggressive. Default: 3")
     parser.add_argument('--nospinner', action='store_true',
