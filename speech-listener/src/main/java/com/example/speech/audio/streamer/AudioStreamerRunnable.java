@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Getter
 @Setter
 public class AudioStreamerRunnable implements Runnable {
-    AtomicBoolean isTurned = new AtomicBoolean(true);
+    AtomicBoolean isLestening = new AtomicBoolean(true);
     private final TargetDataLine line;
     private final Queue<byte[]> bufferQueue;
     private final AudioFormat format;
@@ -64,16 +64,17 @@ public class AudioStreamerRunnable implements Runnable {
         }
     }
 
-    public void setTurned(boolean isTurned){
-        this.isTurned.set(isTurned);
+    public void setListening(boolean isTurned){
+        this.isLestening.set(isTurned);
     }
 
     public void buildByteOutputStream(final ByteArrayOutputStream out, TargetDataLine line, int frameSizeInBytes, final int bufferLengthInBytes) throws IOException {
         final byte[] data = new byte[bufferLengthInBytes];
         int numBytesRead;
 
+        //TODO: add line.stop maybe
         while (!Thread.currentThread().isInterrupted()) {
-            if (isTurned.get()){
+            if (isLestening.get()){
                 line.start();
                 if ((numBytesRead = line.read(data, 0, bufferLengthInBytes)) == -1) {
                     break;

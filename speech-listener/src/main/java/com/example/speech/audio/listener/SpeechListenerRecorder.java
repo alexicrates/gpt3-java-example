@@ -2,7 +2,6 @@ package com.example.speech.audio.listener;
 
 import com.example.speech.audio.detectors.SpeechDetector;
 import com.example.speech.audio.detectors.SphinxTriggerWordDetector;
-import com.example.speech.audio.detectors.TriggerWordDetector;
 import com.example.speech.audio.streamer.AudioFilesUtils;
 import com.example.speech.audio.streamer.AudioStreamerRunnable;
 import com.example.speech.web.clients.GuiClient;
@@ -29,7 +28,6 @@ public class SpeechListenerRecorder {
 
     @Autowired
     public SpeechListenerRecorder(SpeechDetector speechDetector,
-                                  TriggerWordDetector triggerWordDetector,
                                   GuiClient guiClient,
                                   SphinxTriggerWordDetector sphinxTriggerWordDetector) {
         this.speechDetector = speechDetector;
@@ -47,9 +45,9 @@ public class SpeechListenerRecorder {
         files.clear();
 
         if (ifListening) {
-            boolean b   = sphinxTriggerWordDetector.waitForTriggerWord();
+            boolean isTriggered   = sphinxTriggerWordDetector.waitForTriggerWord();
 
-            if (b){
+            if (isTriggered){
                 recordSpeech(maxSilenceSamples, sampleSizeInMillis);
             }
         }
@@ -63,16 +61,12 @@ public class SpeechListenerRecorder {
         System.out.println("Recording your speech");
 
         turnMicro(true);
-        try {
-            guiClient.startRecord();
-        } catch (Exception e) {
-            System.out.println("No gui is present");
-        }
 
         while (silenceSamples < maxSilenceSamples){
             Thread.sleep(sampleSizeInMillis);
-            AudioInputStream audioInputStream = audioStreamerRunnable.getNewAudioInputStream();
-            File audioFile = audioFilesUtils.saveToFile("sound", AudioFileFormat.Type.WAVE, audioInputStream);
+            File audioFile = audioFilesUtils.saveToFile("sound",
+                    AudioFileFormat.Type.WAVE,
+                    audioStreamerRunnable.getNewAudioInputStream());
 
             if (speechDetector.isSpeech(audioFile.getName(), false)) {
                 silenceSamples = 0;
@@ -85,17 +79,19 @@ public class SpeechListenerRecorder {
         }
 
         turnMicro(false);
+    }
+
+    public void turnMicro(boolean shouldListen){
+        this.ifListening = shouldListen;
+        sphinxTriggerWordDetector.setListening(shouldListen);
+        audioStreamerRunnable.setListening(shouldListen);
+
         try {
-            guiClient.endRecord();
+            String s = shouldListen ? guiClient.startRecord() : guiClient.endRecord();
         } catch (Exception e) {
             System.out.println("No gui is present");
         }
-    }
 
-    public void turnMicro(boolean isTurnedOn){
-        this.ifListening = isTurnedOn;
-        sphinxTriggerWordDetector.setListening(isTurnedOn);
-        audioStreamerRunnable.setTurned(isTurnedOn);
-        System.out.println("Recording micro: " + isTurnedOn);
+        System.out.println("Recording micro: " + shouldListen);
     }
 }
