@@ -45,10 +45,16 @@ public class SpeechListenerRecorder {
         files.clear();
 
         if (ifListening) {
-            boolean isTriggered   = sphinxTriggerWordDetector.waitForTriggerWord();
+            boolean isTriggered = sphinxTriggerWordDetector.waitForTriggerWord();
 
             if (isTriggered){
+                activateRecordIndicator(true);
+                turnMicro(true);
+
                 recordSpeech(maxSilenceSamples, sampleSizeInMillis);
+
+                turnMicro(false);
+                activateRecordIndicator(false);
             }
         }
 
@@ -59,8 +65,6 @@ public class SpeechListenerRecorder {
         int silenceSamples = 0;
 
         System.out.println("Recording your speech");
-
-        turnMicro(true);
 
         while (silenceSamples < maxSilenceSamples){
             Thread.sleep(sampleSizeInMillis);
@@ -77,8 +81,6 @@ public class SpeechListenerRecorder {
                 silenceSamples++;
             }
         }
-
-        turnMicro(false);
     }
 
     public void turnMicro(boolean shouldListen){
@@ -86,12 +88,18 @@ public class SpeechListenerRecorder {
         sphinxTriggerWordDetector.setListening(shouldListen);
         audioStreamerRunnable.setListening(shouldListen);
 
+        System.out.println("Recording micro: " + shouldListen);
+    }
+
+    public void activateRecordIndicator(boolean isActive){
         try {
-            String s = shouldListen ? guiClient.startRecord() : guiClient.endRecord();
+            String s = isActive ? guiClient.startRecord() : guiClient.endRecord();
+            if (!s.contains("recording")){
+                throw new Exception();
+            }
         } catch (Exception e) {
             System.out.println("No gui is present");
         }
 
-        System.out.println("Recording micro: " + shouldListen);
     }
 }
