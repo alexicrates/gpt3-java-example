@@ -8,4 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface SileroTTSClient {
     @GetMapping(value = "/tts", params = {"text"})
     String sendText(@RequestParam("text") String text);
+
+    @GetMapping(value = "/status")
+    String status();
 }

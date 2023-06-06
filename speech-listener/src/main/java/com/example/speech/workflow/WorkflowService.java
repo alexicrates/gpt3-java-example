@@ -10,6 +10,7 @@ import com.example.speech.web.dto.WhisperResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class WorkflowService {
     private static final String SPEECH_FILE = "only_speech.wav";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    @Value("${tts.ttl:5}")
+    private int ttsTtl;
 
     private final SpeechListenerRecorder speechListenerRecorder;
     private final SpeechDetector speechDetector;
@@ -62,6 +66,7 @@ public class WorkflowService {
                 return;
             }
 
+            //saving only_speech.wav file to local directory
             boolean speech = speechDetector.isSpeech(mergeFilePath, true);
             if (!speech) return;
 
@@ -106,6 +111,8 @@ public class WorkflowService {
                 throw new RuntimeException(e);
             }
 
+            waitUntilAudioPlayingIsFinished(ttsTtl);
+
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
@@ -113,6 +120,27 @@ public class WorkflowService {
         }
         finally {
             cleanup();
+        }
+    }
+
+    private void waitUntilAudioPlayingIsFinished(int ttlInSeconds){
+        System.out.println("Waiting until audio playing is finished...");
+        for (int i = 0; i < ttlInSeconds; i++) {
+            try {
+                boolean isPlaying = ttsClient.status().contains("true");
+                if (isPlaying) {
+                    Thread.sleep(1000);
+                    System.out.println(".");
+                } else return;
+            }
+            catch (InterruptedException e){
+                System.out.println(e.getMessage());
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+                reportErrorMessage(Services.TTS);
+                return;
+            }
         }
     }
 
@@ -129,7 +157,7 @@ public class WorkflowService {
                 guiClient.appendBotMessage(message);
             }
         } catch (Exception e) {
-            System.out.println("NO GUI PROVIDED");
+            System.out.println("No GUI is present");
         }
     }
 

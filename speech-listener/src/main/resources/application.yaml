@@ -1,14 +1,9 @@
-#----------PORCUPINE CONFIG-----------------------
-porcupine:
-  access-key: ${ACCESS_KEY}
-  library-path: ${LIB_PATH}
-  model-path: ${MODEL_PATH}
-  keyword-paths: ${KEYWORD_PATH}
-  sensitivities: 1
-
 #SPHINX CONFIG
 sphinx:
   trigger-word-path: ${GPT_HOME}/speech-listener/src/main/resources/
+
+tts:
+  ttl: 5
 
 server:
   port: 8081
