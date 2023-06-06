@@ -52,47 +52,58 @@ public class WorkflowService {
     public void listen() {
         try {
             String whisperTranscript = null;
-            String gptResponse = null;
-            String sileroResponse = null;
+            String gptResponse;
+            String sileroResponse;
 
             ArrayList<File> speechSamples = speechListenerRecorder.getTempSpeechAudioFiles(2, 50);
-
             String mergeFilePath = mergeFiles(speechSamples, ".wav", AudioFileFormat.Type.WAVE);
 
             if(mergeFilePath == null){
                 return;
             }
 
-            speechDetector.isSpeech(mergeFilePath, true);
+            boolean speech = speechDetector.isSpeech(mergeFilePath, true);
+            if (!speech) return;
 
-            byte[] responseBytes = sttClient.postAudioFile(new File(SPEECH_FILE));
+            //post audio to whisper
+            byte[] responseBytes;
+            try {
+                responseBytes = sttClient.postAudioFile(new File(SPEECH_FILE));
+            } catch (Exception e) {
+                reportErrorMessage(Services.STT);
+                throw new RuntimeException(e);
+            }
 
+            //read transcript
             try {
                 WhisperResponse whisperResponse = OBJECT_MAPPER.readValue(responseBytes, WhisperResponse.class);
                 whisperTranscript = whisperResponse.getResults().get(0).getTranscript();
                 System.out.println("Transcript: " + whisperTranscript);
+
+                appendMessageToGui(whisperTranscript, Services.STT);
             } catch (IOException e) {
-                System.out.println("CAN'T PARSE JSON");
+                System.out.println("CAN'T PARSE WHISPER JSON");
                 e.printStackTrace();
             }
 
-            if (whisperTranscript != null) {
-                try {
-                    guiClient.appendUserMessage(whisperTranscript);
-                } catch (Exception e) {
-                    System.out.println("NO GUI PROVIDED");
-                }
+            //send transcript to gpt
+            try {
                 gptResponse = gptApiClient.sendRequest(whisperTranscript, true);
                 System.out.println("GPT Response: " + gptResponse);
+
+                appendMessageToGui(gptResponse, Services.GPT);
+            } catch (Exception e) {
+                reportErrorMessage(Services.GPT);
+                throw new RuntimeException(e);
             }
-            if (gptResponse != null) {
-                try {
-                    guiClient.appendBotMessage(gptResponse);
-                } catch (Exception e) {
-                    System.out.println("NO GUI PROVIDED");
-                }
+
+            // send gpt response to silerotts
+            try {
                 sileroResponse = ttsClient.sendText(gptResponse);
                 System.out.println("Silero response: " + sileroResponse);
+            } catch (Exception e) {
+                reportErrorMessage(Services.TTS);
+                throw new RuntimeException(e);
             }
 
         } catch (InterruptedException e) {
@@ -102,6 +113,23 @@ public class WorkflowService {
         }
         finally {
             cleanup();
+        }
+    }
+
+    private void reportErrorMessage(Services service){
+        guiClient.showErrorMessage(service.errorMessage());
+    }
+
+    private void appendMessageToGui(String message, Services service){
+        try {
+            if (service.equals(Services.STT)){
+                guiClient.appendUserMessage(message);
+            }
+            else if (service.equals(Services.GPT)){
+                guiClient.appendBotMessage(message);
+            }
+        } catch (Exception e) {
+            System.out.println("NO GUI PROVIDED");
         }
     }
 
@@ -118,5 +146,4 @@ public class WorkflowService {
             }
         }
     }
-
 }

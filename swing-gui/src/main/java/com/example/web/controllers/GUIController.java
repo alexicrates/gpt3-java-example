@@ -3,6 +3,7 @@ package com.example.web.controllers;
 import com.example.gui.MainFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,5 +37,10 @@ public class GUIController {
     public String appendBotMessage(@RequestParam("text") String text){
         mainFrame.appendMessage(MainFrame.Role.BOT, text);
         return "appended";
+    }
+
+    @GetMapping(value = "/error/{message}")
+    public void showErrorMessage(@PathVariable("message") String message){
+        mainFrame.showErrorMessage(message);
     }
 }

@@ -32,7 +32,7 @@ public class MainFrame extends JFrame {
     @Autowired
     private PostgresRepository repository;
 
-    private boolean isMute = false;
+    private boolean isListening = true;
 
     private JPanel mainPanel;
     private JButton microphoneControl;
@@ -62,14 +62,13 @@ public class MainFrame extends JFrame {
         setupMenu();
 
         microphoneControl.addActionListener(e -> {
-            isMute = !isMute;
+            setMicrophoneListening(isListening);
+            isListening = !isListening;
             JButton source = (JButton) e.getSource();
-            if (isMute) {
+            if (!isListening) {
                 source.setIcon(mutedMicroImage);
-                listenerClient.turnMicroOff();
             } else {
                 source.setIcon(unmutedMicroImage);
-                listenerClient.turnMicroOn();
             }
         });
 
@@ -86,6 +85,23 @@ public class MainFrame extends JFrame {
             Role role = message.getMessageType() == INPUT ? Role.YOU : Role.BOT;
             this.appendMessage(role, message.getPrompt());
         }
+    }
+
+    public void setMicrophoneListening(boolean shouldListen){
+        try {
+            if (shouldListen) {
+                listenerClient.turnMicroOn();
+            } else {
+                listenerClient.turnMicroOff();
+            }
+        } catch (Exception e) {
+            showErrorMessage("Can't detect speech-listener module");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void showErrorMessage(String message){
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public void appendMessage(Role role, String text) {
