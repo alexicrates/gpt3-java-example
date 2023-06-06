@@ -46,7 +46,7 @@ public class MainFrame extends JFrame {
     ImageIcon unmutedMicroImage = getResizedImageIcon(unmutedMicroImagePath, 50, 60);
     ImageIcon mutedMicroImage = getResizedImageIcon(mutedMicroImagePath, 50, 60);
 
-    public MainFrame() throws IOException {
+    public MainFrame() {
         $$$setupUI$$$();
 
         this.setTitle("Voice App");
@@ -62,7 +62,7 @@ public class MainFrame extends JFrame {
         setupMenu();
 
         microphoneControl.addActionListener(e -> {
-            setMicrophoneListening(isListening);
+            setMicrophoneListening(!isListening);
             isListening = !isListening;
             JButton source = (JButton) e.getSource();
             if (!isListening) {
@@ -85,6 +85,7 @@ public class MainFrame extends JFrame {
             Role role = message.getMessageType() == INPUT ? Role.YOU : Role.BOT;
             this.appendMessage(role, message.getPrompt());
         }
+        setMicrophoneListening(isListening);
     }
 
     public void setMicrophoneListening(boolean shouldListen){
@@ -111,9 +112,13 @@ public class MainFrame extends JFrame {
         textArea1.setText("");
     }
 
-    public void setRecording(boolean recording) throws IOException {
-        recordIndicator.setIcon(getResizedImageIcon(
-                getBufferedImage(recordIndicatorImagePath, recording), 50, 50));
+    public void setRecording(boolean recording) {
+        try {
+            recordIndicator.setIcon(getResizedImageIcon(
+                    getBufferedImage(recordIndicatorImagePath, recording), 50, 50));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void setupMenu() {

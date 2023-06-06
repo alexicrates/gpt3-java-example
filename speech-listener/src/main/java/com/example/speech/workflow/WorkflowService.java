@@ -55,7 +55,7 @@ public class WorkflowService {
             String gptResponse;
             String sileroResponse;
 
-            ArrayList<File> speechSamples = speechListenerRecorder.getTempSpeechAudioFiles(2, 50);
+            ArrayList<File> speechSamples = speechListenerRecorder.getTempSpeechAudioFiles();
             String mergeFilePath = mergeFiles(speechSamples, ".wav", AudioFileFormat.Type.WAVE);
 
             if(mergeFilePath == null){

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +24,9 @@ public class SpeechListenerRecorder {
     private final GuiClient guiClient;
     private final SphinxTriggerWordDetector sphinxTriggerWordDetector;
     private boolean ifListening = true;
+
+    int maxSilenceSamples = 2;
+    int sampleSizeInMillis = 50;
 
     @Autowired
     public SpeechListenerRecorder(SpeechDetector speechDetector,
@@ -41,24 +43,29 @@ public class SpeechListenerRecorder {
         thread.start();
     }
 
-    public ArrayList<File> getTempSpeechAudioFiles(int maxSilenceSamples, int sampleSizeInMillis) throws InterruptedException, IOException {
+    public ArrayList<File> getTempSpeechAudioFiles() throws InterruptedException, IOException {
         files.clear();
 
         if (ifListening) {
             boolean isTriggered = sphinxTriggerWordDetector.waitForTriggerWord();
 
             if (isTriggered){
-                activateRecordIndicator(true);
-                turnMicro(true);
-
-                recordSpeech(maxSilenceSamples, sampleSizeInMillis);
-
-                turnMicro(false);
-                activateRecordIndicator(false);
+                record();
             }
         }
 
         return files;
+    }
+
+    private void record() throws IOException, InterruptedException {
+        activateRecording(true);
+        recordSpeech(maxSilenceSamples, sampleSizeInMillis);
+        activateRecording(false);
+    }
+
+    private void activateRecording(boolean shouldRecord){
+        activateRecordIndicator(shouldRecord);
+        audioStreamerRunnable.setListening(shouldRecord);
     }
 
     private void recordSpeech(int maxSilenceSamples, int sampleSizeInMillis) throws InterruptedException, IOException {
@@ -87,7 +94,6 @@ public class SpeechListenerRecorder {
         this.ifListening = shouldListen;
         sphinxTriggerWordDetector.setListening(shouldListen);
         audioStreamerRunnable.setListening(shouldListen);
-
         System.out.println("Recording micro: " + shouldListen);
     }
 

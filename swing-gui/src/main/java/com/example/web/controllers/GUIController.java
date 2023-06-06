@@ -16,13 +16,13 @@ public class GUIController {
     private MainFrame mainFrame;
 
     @GetMapping("/record/start")
-    public String startRecord() throws IOException {
+    public String startRecord() {
         mainFrame.setRecording(true);
         return "recording started";
     }
 
     @GetMapping("/record/end")
-    public String endRecord() throws IOException {
+    public String endRecord() {
         mainFrame.setRecording(false);
         return "recording ended";
     }
