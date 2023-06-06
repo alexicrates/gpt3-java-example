@@ -9,6 +9,8 @@ services:
     devices:
         - /dev/snd:/dev/snd
     environment:
+      - "GPT_HOME="
+
       # OPENAI API CONFIG
       - "OPENAI_API_KEY=${OPENAI_API_KEY}"
       - "MODEL_NAME=text-davinci-003"
@@ -25,12 +27,6 @@ services:
       - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}'
       - "POSTGRES_HOST=jdbc:postgresql://postgres:5432/logs-db"
 
-      # TRIGGER WORD DETECTION MODEL CONFIG
-      - "ACCESS_KEY=bIyF3LaYYuARsCmzGSd66gG06eb5NN1hBT2v3hcrv7IbN2yvLkTG3A=="
-      - "KEYWORD_PATH=/porcupine/Alisa_en_linux_v2_2_0.ppn"
-      - "LIB_PATH=/porcupine/libpv_porcupine_jni.so"
-      - "MODEL_PATH=/porcupine/porcupine_params.pv"
-
       # ENABLING GUI
       - "DISPLAY=${DISPLAY}"
     ports:
@@ -38,7 +34,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - logs_db
+      - backend
     tty: true
 
   postgres:
@@ -53,10 +49,10 @@ services:
       - 'POSTGRES_PASSWORD=#{POSTGRES_PASSWORD:-password}'
       - 'POSTGRES_DB=logs-db'
     networks:
-      - logs_db
+      - backend
 
 volumes:
   logs-data:
 
 networks:
-  logs_db:
+  backend:

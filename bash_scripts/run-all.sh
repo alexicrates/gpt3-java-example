@@ -4,17 +4,15 @@
 project_dir=$(cd $(dirname "$0") && cd .. && pwd)
 app_pids=()
 
-docker pull postgres;
-
 start_app() {
     $1 & app_pids+=($!)
 }
 
 whisper='python3 -m flask --app '$project_dir'/whisper-api-flask/app.py run --host=0.0.0.0';
 tts='python3 -m flask --app '$project_dir'/silero_tts/app.py run --host=0.0.0.0 --port 5001';
-gpt='mvn --file '$project_dir'/gpt-api/pom.xml spring-boot:run'
-listener='mvn --file '$project_dir'/speech-listener/pom.xml spring-boot:run'
-gui='mvn --file '$project_dir'/swing-gui/pom.xml spring-boot:run'
+gpt='/mvnw --projects gpt-api spring-boot:run'
+listener='/mvnw --projects speech-listener spring-boot:run'
+gui='/mvnw --projects swing-gui spring-boot:run'
 
 start_app "$whisper"
 start_app "$tts"
