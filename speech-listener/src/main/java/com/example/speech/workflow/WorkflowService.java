@@ -18,13 +18,12 @@ import javax.sound.sampled.AudioFileFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.example.speech.audio.streamer.AudioFilesUtils.mergeFiles;
 
 @Service
 public class WorkflowService {
-    private static final String SPEECH_FILE = "only_speech.wav";
-
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Value("${tts.ttl:5}")
@@ -66,14 +65,10 @@ public class WorkflowService {
                 return;
             }
 
-            //saving only_speech.wav file to local directory
-            boolean speech = speechDetector.isSpeech(mergeFilePath, true);
-            if (!speech) return;
-
             //post audio to whisper
             byte[] responseBytes;
             try {
-                responseBytes = sttClient.postAudioFile(new File(SPEECH_FILE));
+                responseBytes = sttClient.postAudioFile(new File(mergeFilePath));
             } catch (Exception e) {
                 reportErrorMessage(Services.STT);
                 throw new RuntimeException(e);
@@ -83,7 +78,8 @@ public class WorkflowService {
             try {
                 WhisperResponse whisperResponse = OBJECT_MAPPER.readValue(responseBytes, WhisperResponse.class);
                 whisperTranscript = whisperResponse.getResults().get(0).getTranscript();
-                System.out.println("Transcript: " + whisperTranscript);
+
+                System.out.println(new Date(System.currentTimeMillis()) + " - Transcript: " + whisperTranscript);
 
                 appendMessageToGui(whisperTranscript, Services.STT);
             } catch (IOException e) {
@@ -93,8 +89,9 @@ public class WorkflowService {
 
             //send transcript to gpt
             try {
+		System.out.println(new Date(System.currentTimeMillis()) + " - Sending request to GPT model");
                 gptResponse = gptApiClient.sendRequest(whisperTranscript, true);
-                System.out.println("GPT Response: " + gptResponse);
+                System.out.println(new Date(System.currentTimeMillis()) + " - GPT Response: " + gptResponse);
 
                 appendMessageToGui(gptResponse, Services.GPT);
             } catch (Exception e) {
@@ -105,13 +102,13 @@ public class WorkflowService {
             // send gpt response to silerotts
             try {
                 sileroResponse = ttsClient.sendText(gptResponse);
-                System.out.println("Silero response: " + sileroResponse);
+                System.out.println(new Date(System.currentTimeMillis()) + " - Silero response: " + sileroResponse);
             } catch (Exception e) {
                 reportErrorMessage(Services.TTS);
                 throw new RuntimeException(e);
             }
 
-            waitUntilAudioPlayingIsFinished(ttsTtl);
+            waitUntilAudioPlayingIsFinished();
 
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
@@ -123,15 +120,15 @@ public class WorkflowService {
         }
     }
 
-    private void waitUntilAudioPlayingIsFinished(int ttlInSeconds){
-        System.out.println("Waiting until audio playing is finished...");
-        for (int i = 0; i < ttlInSeconds; i++) {
+    private void waitUntilAudioPlayingIsFinished(){
+        System.out.println(new Date(System.currentTimeMillis()) + " - Waiting until audio playing is finished...");
+        boolean isPlaying = true;
+        while (isPlaying){
             try {
-                boolean isPlaying = ttsClient.status().contains("true");
+                isPlaying = ttsClient.status().contains("true");
                 if (isPlaying) {
                     Thread.sleep(1000);
-                    System.out.println(".");
-                } else return;
+                }
             }
             catch (InterruptedException e){
                 System.out.println(e.getMessage());
@@ -142,6 +139,7 @@ public class WorkflowService {
                 return;
             }
         }
+        System.out.println(new Date(System.currentTimeMillis()) + " - Audio playing is finished...");
     }
 
     private void reportErrorMessage(Services service){

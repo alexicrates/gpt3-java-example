@@ -1,5 +1,6 @@
 package com.example.speech.audio.detectors;
 
+import com.fasterxml.jackson.databind.DatabindException;
 import edu.cmu.sphinx.api.Configuration;
 import edu.cmu.sphinx.api.LiveSpeechRecognizer;
 import jakarta.annotation.PostConstruct;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 
 @Service
 @Getter
@@ -44,13 +47,13 @@ public class SphinxTriggerWordDetector {
         recognizer = new LiveSpeechRecognizer(configuration);
 
         Thread.sleep(1000);
-        System.out.println("Listening...");
+        System.out.println(new Date(System.currentTimeMillis()) + " - Listening...");
         recognizer.startRecognition(true);
 
         while (isListening) {
             String hypothesis = recognizer.getResult().getHypothesis();
             if (hypothesis.equals("alesya") && isListening) {
-                System.out.println("Trigger word detected: " + hypothesis);
+                System.out.println(new Date(System.currentTimeMillis()) + " - Trigger word detected: " + hypothesis);
                 recognizer.stopRecognition();
                 return true;
             }

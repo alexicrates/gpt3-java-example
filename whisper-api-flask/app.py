@@ -2,6 +2,7 @@ from flask import Flask, abort, request
 from tempfile import NamedTemporaryFile
 import whisper
 import torch
+from datetime import datetime
 
 torch.cuda.is_available()
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -21,6 +22,8 @@ def handler():
     if not request.files:
         abort(400)
 
+    print("Transcript building is started: ", datetime.utcnow())
+
     results = []
 
     for filename, handle in request.files.items():
@@ -34,4 +37,6 @@ def handler():
             'transcript': result['text'],
         })
 
+    print("Transcript building is finished: ", datetime.utcnow())
+    
     return {'results': results}

@@ -39,4 +39,3 @@ public class ChatMessage {
         OUTPUT
     }
 }
-

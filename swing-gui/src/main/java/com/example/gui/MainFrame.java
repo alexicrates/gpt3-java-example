@@ -85,7 +85,6 @@ public class MainFrame extends JFrame {
             Role role = message.getMessageType() == INPUT ? Role.YOU : Role.BOT;
             this.appendMessage(role, message.getPrompt());
         }
-        setMicrophoneListening(isListening);
     }
 
     public void setMicrophoneListening(boolean shouldListen){

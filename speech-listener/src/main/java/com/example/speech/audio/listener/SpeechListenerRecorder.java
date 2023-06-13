@@ -13,6 +13,7 @@ import javax.sound.sampled.AudioFileFormat;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Service
 public class SpeechListenerRecorder {
@@ -71,7 +72,7 @@ public class SpeechListenerRecorder {
     private void recordSpeech(int maxSilenceSamples, int sampleSizeInMillis) throws InterruptedException, IOException {
         int silenceSamples = 0;
 
-        System.out.println("Recording your speech");
+        System.out.println(new Date(System.currentTimeMillis()) + " - Recording your speech");
 
         while (silenceSamples < maxSilenceSamples){
             Thread.sleep(sampleSizeInMillis);
@@ -88,6 +89,9 @@ public class SpeechListenerRecorder {
                 silenceSamples++;
             }
         }
+
+        System.out.println(new Date(System.currentTimeMillis()) + " - Recording is finished");
+
     }
 
     public void turnMicro(boolean shouldListen){
