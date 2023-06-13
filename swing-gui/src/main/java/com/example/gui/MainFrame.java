@@ -3,6 +3,7 @@ package com.example.gui;
 import com.example.gptlogsspringbootstarter.model.entities.ChatMessage;
 import com.example.gptlogsspringbootstarter.model.repositories.PostgresRepository;
 import com.example.web.clients.ListenerClient;
+import com.example.web.clients.SileroTTSClient;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -20,6 +21,7 @@ import static com.example.gptlogsspringbootstarter.model.entities.ChatMessage.Me
 import static com.example.gui.ImageUtils.getBufferedImage;
 import static com.example.gui.ImageUtils.getResizedImageIcon;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -28,6 +30,9 @@ public class MainFrame extends JFrame {
 
     @Autowired
     private ListenerClient listenerClient;
+
+    @Autowired
+    private SileroTTSClient ttsClient;
 
     @Autowired
     private PostgresRepository repository;
@@ -122,7 +127,7 @@ public class MainFrame extends JFrame {
 
     private void setupMenu() {
         JMenuBar menuBar = new JMenuBar();
-        Font font = new Font("", 0, 20);
+        Font font = new Font("", Font.PLAIN, 20);
 
         JMenuItem authorItem = new JMenuItem("Автор");
         authorItem.setFont(font);
@@ -153,16 +158,30 @@ public class MainFrame extends JFrame {
         deleteLogsItem.setFont(font);
         deleteLogsItem.addActionListener(e -> {
             try {
-                repository.deleteAll();
+                int answer = JOptionPane.showConfirmDialog(null, "Хотите удалить все сообщения?", "Warning", YES_NO_OPTION);
+                if (answer == JOptionPane.YES_OPTION) {
+                    repository.deleteAll();
+                }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
             clearMessageWindow();
         });
 
+        JMenu voicesMenu = new JMenu("Голоса");
+        voicesMenu.setFont(font);
+        for (SileroVoices value : SileroVoices.values()) {
+            JMenuItem jMenuItem = new JMenuItem(value.toString());
+            jMenuItem.setFont(font);
+            jMenuItem.addActionListener(e -> ttsClient.setSpeaker(value.toString()));
+            voicesMenu.add(jMenuItem);
+        }
+
         JMenu actionMenu = new JMenu("Действия");
         actionMenu.setFont(font);
         actionMenu.add(deleteLogsItem);
+
+        actionMenu.add(voicesMenu);
 
         menuBar.add(actionMenu);
         menuBar.add(menu);
