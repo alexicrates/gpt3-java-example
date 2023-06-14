@@ -161,6 +161,7 @@ public class MainFrame extends JFrame {
                 int answer = JOptionPane.showConfirmDialog(null, "Хотите удалить все сообщения?", "Warning", YES_NO_OPTION);
                 if (answer == JOptionPane.YES_OPTION) {
                     repository.deleteAll();
+                    clearMessageWindow();
                 }
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
